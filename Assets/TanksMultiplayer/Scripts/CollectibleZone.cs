@@ -63,7 +63,8 @@ namespace TanksMP
 
             CollectibleTeam colOther = col.gameObject.GetComponent<CollectibleTeam>();
 
-            //một vật phẩm của đội, không phải của chính chúng ta, đã được mang đến khu vực này 67:             if (colOther != null && colOther.teamIndex != teamIndex)
+            //một vật phẩm của đội, không phải của chính chúng ta, đã được mang đến khu vực này
+            if (colOther != null && colOther.teamIndex != teamIndex)
             {
                 if (scoreClip) AudioManager.Play3D(scoreClip, transform.position);
 
@@ -79,7 +80,8 @@ namespace TanksMP
                     return;
                 }
 
-                //xóa các thông điệp mạng về Vật phẩm thu thập vì nó sắp bị hủy 84:                 PhotonNetwork.RemoveRPCs(colOther.spawner.photonView);
+                //xóa các thông điệp mạng về Vật phẩm thu thập vì nó sắp bị hủy
+                PhotonNetwork.RemoveRPCs(colOther.spawner.photonView);
                 colOther.spawner.photonView.RPC("Destroy", RpcTarget.All);
             }
         }

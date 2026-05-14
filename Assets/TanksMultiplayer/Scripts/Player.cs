@@ -14,7 +14,8 @@ namespace TanksMP
     /// <summary>
     /// Lớp người chơi được nối mạng thực hiện điều khiển di chuyển và bắn súng.
     /// Chứa cả logic server và máy khách theo cách tiếp cận có thẩm quyền (authoritative).
-    /// </summary> 18:     public class Player : MonoBehaviourPunCallbacks, IPunObservable
+    /// </summary>
+    public class Player : MonoBehaviourPunCallbacks, IPunObservable
     {
         /// <summary>
         /// Văn bản UI hiển thị tên người chơi.
@@ -149,7 +150,8 @@ namespace TanksMP
             OnHealthChange(GetView().GetHealth());
             OnShieldChange(GetView().GetShield());
 
-            //chỉ được gọi cho máy khách này 154:             if (!photonView.IsMine)
+            //chỉ được gọi cho máy khách này
+            if (!photonView.IsMine)
                 return;
 
 			//đặt một tham chiếu toàn cục đến người chơi cục bộ

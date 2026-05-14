@@ -174,7 +174,8 @@ namespace TanksMP
                     RandomPoint(inRange[0].transform.position, range * 2, out targetPoint);
                 }
                 
-                //vòng lặp bắn súng 178:                 for(int i = 0; i < inRange.Count; i++)
+                //vòng lặp bắn súng
+                for(int i = 0; i < inRange.Count; i++)
                 {
                     RaycastHit hit;
                     //raycast để phát hiện kẻ thù hữu hình và bắn vào vị trí hiện tại của họ

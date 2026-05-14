@@ -71,7 +71,8 @@ namespace TanksMP
                 AesManaged aes = new AesManaged();
                 aes.Key = keyArray;
                 ICryptoTransform cTransform = aes.CreateEncryptor();
-                //hack 16 ký tự đầu tiên và đưa chúng xuống cuối để tránh đầu vào IV bị lỗi định dạng 75:                 Array.Resize(ref toEncryptArray, toEncryptArray.Length + 16);
+                //hack 16 ký tự đầu tiên và đưa chúng xuống cuối để tránh đầu vào IV bị lỗi định dạng
+                Array.Resize(ref toEncryptArray, toEncryptArray.Length + 16);
                 Array.Copy(toEncryptArray, 0, toEncryptArray, toEncryptArray.Length - 16, 16);
                 resultArray = cTransform.TransformFinalBlock(toEncryptArray, 0, toEncryptArray.Length);
             #elif (UNITY_ANDROID || UNITY_IPHONE)
