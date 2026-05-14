@@ -1,4 +1,4 @@
-﻿using System.IO;
+using System.IO;
 using UnityEditor;
 using UnityEngine;
 using UnityEditor.SceneManagement;
@@ -44,10 +44,10 @@ namespace TanksMP
 
             EditorGUILayout.Space();
             EditorGUILayout.LabelField("Tanks Multiplayer - Network Setup", EditorStyles.boldLabel);
-            EditorGUILayout.LabelField("Please select the network integration you are going to use this asset with (must be imported beforehand!).");
+            EditorGUILayout.LabelField("Vui lòng chọn tích hợp mạng bạn sẽ sử dụng với asset này (phải được import trước đó!).");
             EditorGUILayout.Space();
-            EditorGUILayout.LabelField("Note: For a detailed comparison about features and pricing, please refer to the provider's website.");
-            EditorGUILayout.LabelField("If possible, the features of this asset are the same across all multiplayer services.");
+            EditorGUILayout.LabelField("Lưu ý: Để biết so sánh chi tiết về các tính năng và giá cả, vui lòng tham khảo trang web của nhà cung cấp.");
+            EditorGUILayout.LabelField("Nếu có thể, các tính năng của asset này là giống nhau trên tất cả các dịch vụ multiplayer.");
             EditorGUILayout.Space(20);
 
             EditorGUILayout.BeginHorizontal();

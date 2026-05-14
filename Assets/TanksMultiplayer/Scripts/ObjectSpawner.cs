@@ -1,7 +1,7 @@
-﻿/*  This file is part of the "Tanks Multiplayer" project by FLOBUK.
- *  You are only allowed to use these resources if you've bought them from the Unity Asset Store.
- * 	You shall not license, sublicense, sell, resell, transfer, assign, distribute or
- * 	otherwise make available to any third party the Service or the Content. */
+/*  File này là một phần của dự án "Tanks Multiplayer" của FLOBUK.
+ *  Bạn chỉ được phép sử dụng các tài nguyên này nếu bạn đã mua chúng từ Unity Asset Store.
+ * 	Bạn không được cấp phép, cấp phép con, bán, bán lại, chuyển nhượng, chỉ định, phân phối hoặc
+ * 	cung cấp Dịch vụ hoặc Nội dung cho bất kỳ bên thứ ba nào. */
 
 using UnityEngine;
 using System.Collections;
@@ -10,45 +10,45 @@ using Photon.Pun;
 namespace TanksMP
 {
     /// <summary>
-    /// Manages network-synced spawning of prefabs, in this case collectibles and powerups.
-    /// With the respawn time synced on all clients it supports host migration too.
+    /// Quản lý việc tạo (spawn) các prefab được đồng bộ qua mạng, trong trường hợp này là các vật phẩm thu thập và hỗ trợ (powerups).
+    /// Với thời gian hồi sinh được đồng bộ trên tất cả các máy khách, nó cũng hỗ trợ việc chuyển đổi chủ phòng (host migration).
     /// </summary>
     public class ObjectSpawner : MonoBehaviourPunCallbacks
 	{
         /// <summary>
-        /// Prefab to sync the instantiation for over the network.
+        /// Prefab để đồng bộ việc khởi tạo qua mạng.
         /// </summary>
 		public GameObject prefab;
 
         /// <summary>
-        /// Checkbox whether the object should be respawned after being despawned.
+        /// Ô đánh dấu xem đối tượng có nên được hồi sinh sau khi bị hủy hay không.
         /// </summary>
         public bool respawn;
 
         /// <summary>
-        /// Delay until respawning the object again after it got despawned.
+        /// Khoảng thời gian chờ cho đến khi hồi sinh lại đối tượng sau khi nó bị hủy.
         /// </summary>
         public int respawnTime;
 
         /// <summary>
-        /// Reference to the spawned prefab gameobject instance in the scene.
+        /// Tham chiếu đến instance của prefab đã được tạo trong scene.
         /// </summary>
         [HideInInspector]
         public GameObject obj;
 
         /// <summary>
-        /// Type of Collectible this spawner should utilize. This is set automatically,
-        /// thus hidden in the inspector. Fires network messages depending on type.
+        /// Loại vật phẩm thu thập mà bộ tạo này nên sử dụng. Cái này được thiết lập tự động,
+        /// do đó bị ẩn trong inspector. Gửi các thông điệp mạng tùy thuộc vào loại.
         /// </summary>
         [HideInInspector]
         public CollectionType colType = CollectionType.Use;
 
-        //time value when the next respawn should happen measured in game time
+        //giá trị thời gian khi lần hồi sinh tiếp theo sẽ diễn ra, được tính theo thời gian trong trò chơi
         private float nextSpawn;
 
 
-        //when entering the game scene for the first time as a master client,
-        //the master should spawn the object in the scene for all other clients
+        //khi vào scene game lần đầu tiên với tư cách là master client,
+        //master client nên tạo đối tượng trong scene cho tất cả các client khác
         void Start()
         {
             if(PhotonNetwork.IsMasterClient)
@@ -57,27 +57,27 @@ namespace TanksMP
         
         
         /// <summary>
-        /// Synchronizes current active state of the object to joining players.
+        /// Đồng bộ hóa trạng thái hoạt động hiện tại của đối tượng cho các người chơi mới tham gia.
         /// </summary>
         public override void OnPlayerEnteredRoom(Photon.Realtime.Player player)
         {
-            //don't execute as a non-master, but also don't execute it for the master itself
+            //không thực thi nếu không phải master, và cũng không thực thi cho chính master client
             if(!PhotonNetwork.IsMasterClient || player.IsMasterClient)
                 return;
 
-            //the object is active in the scene on the master. Thus send an instantiate call
-            //to the joining player so the object gets enabled/instantiated on that client too
+            //đối tượng đang hoạt động trong scene trên master. Do đó gửi một lời gọi khởi tạo
+            //đến người chơi mới tham gia để đối tượng cũng được kích hoạt/khởi tạo trên máy khách đó
             if (obj != null && obj.activeInHierarchy)
             {
                 this.photonView.RPC("Instantiate", player);
             }
 
-            //defining cases in which the SetRespawn method should be called instead
+            //xác định các trường hợp mà phương thức SetRespawn nên được gọi thay thế
             switch (colType)
             {
                 case CollectionType.Use:
-                    //on the master the object is not active in the scene. As a client we have to know the
-                    //remaining respawn time so we are able to take over in a host migration scenario
+                    //trên master, đối tượng không hoạt động trong scene. Với tư cách là client, chúng ta phải biết
+                    //thời gian hồi sinh còn lại để có thể tiếp quản trong kịch bản chuyển đổi chủ phòng
                     if (obj == null || !obj.activeInHierarchy)
                     {
                         this.photonView.RPC("SetRespawn", player, nextSpawn);
@@ -85,8 +85,8 @@ namespace TanksMP
                     break;
 
                 case CollectionType.Pickup:
-                    //in addition to the check above, here we check for the current state too
-                    //if the item got dropped, the master should send an updated respawn time as well
+                    //ngoài việc kiểm tra ở trên, ở đây chúng ta cũng kiểm tra trạng thái hiện tại
+                    //nếu vật phẩm bị rơi, master client cũng nên gửi thời gian hồi sinh đã cập nhật
                     if (obj == null || !obj.activeInHierarchy ||
                       (obj.transform.parent != PoolManager.GetPool(obj).transform && obj.transform.position != transform.position))
                     {
@@ -98,26 +98,26 @@ namespace TanksMP
 
 
         /// <summary>
-        /// Called after switching to a new MasterClient when the current one leaves.
-        /// Here the new master has to decide whether to enable the object in the scene.
+        /// Được gọi sau khi chuyển sang một MasterClient mới khi cái hiện tại rời đi.
+        /// Tại đây, master mới phải quyết định có kích hoạt đối tượng trong scene hay không.
         /// </summary>
 		public override void OnMasterClientSwitched(Photon.Realtime.Player newMaster)
 		{         
-            //only execute on the new master client
+            //chỉ thực thi trên máy khách master mới
             if(PhotonNetwork.LocalPlayer != newMaster)
                 return;
 
-            //defining cases in which the SpawnRoutine should be skipped
+            //xác định các trường hợp mà SpawnRoutine nên được bỏ qua
             switch (colType)
             {
                 case CollectionType.Use:
-                    //the object is already active thus do not trigger a respawn coroutine
+                    //đối tượng đã hoạt động nên không kích hoạt coroutine hồi sinh
                     if (obj != null && obj.activeInHierarchy)
                         return;
                     break;
                 case CollectionType.Pickup:
-                    //in addition to the check above, here we check for the current state too
-                    //if the item is not being carried around and at the home base we can skip the respawn
+                    //ngoài việc kiểm tra ở trên, ở đây chúng ta cũng kiểm tra trạng thái hiện tại
+                    //nếu vật phẩm không bị mang đi và đang ở căn cứ, chúng ta có thể bỏ qua việc hồi sinh
                     if (obj != null && obj.activeInHierarchy &&
                         obj.transform.parent == PoolManager.GetPool(obj).transform &&
                         obj.transform.position == transform.position)
@@ -129,8 +129,8 @@ namespace TanksMP
         }
 
 
-        //calculates the remaining time until the next respawn,
-        //waits for the delay to have passed and then instantiates the object
+        //tính toán thời gian còn lại cho đến lần hồi sinh tiếp theo,
+        //chờ đợi độ trễ trôi qua và sau đó khởi tạo đối tượng
         IEnumerator SpawnRoutine()
 		{
             yield return new WaitForEndOfFrame();
@@ -139,17 +139,17 @@ namespace TanksMP
 
             if (PhotonNetwork.IsConnected)
             {
-                //differ between CollectionType
+                //phân biệt giữa các loại CollectionType
                 if(colType == CollectionType.Pickup && obj != null)
                 {
-                    //if the item is of type Pickup, it should not be destroyed after
-                    //the routine is over but returned to its original position again
+                    //nếu vật phẩm thuộc loại Pickup, nó không nên bị hủy sau khi
+                    //routine kết thúc mà nên được trả lại vị trí ban đầu
                     PhotonNetwork.RemoveRPCs(this.photonView);
                     this.photonView.RPC("Return", RpcTarget.All);
                 }
                 else
                 {
-                    //instantiate a new copy on all clients
+                    //khởi tạo một bản sao mới trên tất cả các máy khách
                     this.photonView.RPC("Instantiate", RpcTarget.All);
                 }
             }
@@ -157,23 +157,23 @@ namespace TanksMP
 		
         
         /// <summary>
-        /// Instantiates the object in the scene using PoolManager functionality.
+        /// Khởi tạo đối tượng trong scene bằng chức năng của PoolManager.
         /// </summary>
         [PunRPC]
 		public void Instantiate()
 		{
-            //sanity check in case there already is an object active
+            //kiểm tra để đảm bảo trong trường hợp đã có một đối tượng đang hoạt động
             if (obj != null)
                 return;
 
 			obj = PoolManager.Spawn(prefab, transform.position, transform.rotation);
-            //set the reference on the instantiated object for cross-referencing
+            //thiết lập tham chiếu trên đối tượng đã được khởi tạo để tham chiếu chéo
             Collectible colItem = obj.GetComponent<Collectible>();
             if(colItem != null)
             {
-                //set cross-reference
+                //thiết lập tham chiếu chéo
                 colItem.spawner = this;
-                //set internal item type automatically
+                //tự động thiết lập loại vật phẩm nội bộ
                 if (colItem is CollectibleTeam) colType = CollectionType.Pickup;
                 else colType = CollectionType.Use;
             }
@@ -181,22 +181,22 @@ namespace TanksMP
 
 
         /// <summary>
-        /// Collects the object and assigns it to the player with the corresponding view.
+        /// Thu thập đối tượng và gán nó cho người chơi có view tương ứng.
         /// </summary>
         [PunRPC]
         public void Pickup(short viewId)
         {
-            //in case this method call is received over the network earlier than the
-            //spawner instantiation, here we make sure to catch up and instantiate it directly
+            //trong trường hợp lời gọi phương thức này được nhận qua mạng sớm hơn việc
+            //khởi tạo bộ tạo, ở đây chúng ta đảm bảo bắt kịp và khởi tạo nó trực tiếp
             if (obj == null)
                 Instantiate();
 
-            //get target view transform to parent to
+            //lấy transform của view mục tiêu để làm cha
             PhotonView view = PhotonView.Find(viewId);
             obj.transform.parent = view.transform;
             obj.transform.localPosition = Vector3.zero + new Vector3(0, 2, 0);
             
-            //assign carrier to Collectible
+            //gán người mang cho vật phẩm thu thập
             Collectible colItem = obj.GetComponent<Collectible>();
             if (colItem != null)
             {
@@ -204,28 +204,28 @@ namespace TanksMP
                 colItem.OnPickup();
             }
 
-            //cancel return timer as this object is now being carried around
+            //hủy bỏ bộ đếm thời gian trả về vì đối tượng này hiện đang được mang đi
             if (PhotonNetwork.IsMasterClient)
                 StopAllCoroutines();
         }
 
 
         /// <summary>
-        /// Unparents the object from any carrier and drops it at the targeted position.
+        /// Gỡ bỏ đối tượng khỏi bất kỳ người mang nào và thả nó tại vị trí mục tiêu.
         /// </summary>
         [PunRPC]
         public void Drop(Vector3 position)
         {
-            //in case this method call is received over the network earlier than the
-            //spawner instantiation, here we make sure to catch up and instantiate it directly
+            //trong trường hợp lời gọi phương thức này được nhận qua mạng sớm hơn việc
+            //khởi tạo bộ tạo, ở đây chúng ta đảm bảo bắt kịp và khởi tạo nó trực tiếp
             if (obj == null)
                 Instantiate();
 
-            //re-parent object to this spawner
+            //gán lại cha của đối tượng cho bộ tạo này
             obj.transform.parent = PoolManager.GetPool(obj).transform;
             obj.transform.position = position;
 
-            //reset carrier
+            //đặt lại người mang
             Collectible colItem = obj.GetComponent<Collectible>();
             if (colItem != null)
             {
@@ -233,9 +233,9 @@ namespace TanksMP
                 colItem.OnDrop();
             }
 
-            //update respawn counter for a future point in time
+            //cập nhật bộ đếm hồi sinh cho một thời điểm trong tương lai
             SetRespawn();
-            //if the respawn mechanic is selected, trigger a new coroutine
+            //nếu cơ chế hồi sinh được chọn, kích hoạt một coroutine mới
             if (PhotonNetwork.IsMasterClient && respawn)
             {
                 StopAllCoroutines();
@@ -245,17 +245,17 @@ namespace TanksMP
 
 
         /// <summary>
-        /// Returns the object back to this spawner's position. E.g. in Capture The Flag mode this
-        /// can occur if a team collects its own flag, or a flag timed out after being dropped. 
+        /// Trả đối tượng về vị trí của bộ tạo này. Ví dụ: trong chế độ Capture The Flag, điều này
+        /// có thể xảy ra nếu một đội thu thập cờ của chính họ, hoặc cờ hết thời gian sau khi bị rơi. 
         /// </summary>
         [PunRPC]
         public void Return()
         {
-            //re-parent object to this spawner
+            //gán lại cha của đối tượng cho bộ tạo này
             obj.transform.parent = PoolManager.GetPool(obj).transform;
             obj.transform.position = transform.position;
 
-            //reset carrier
+            //đặt lại người mang
             Collectible colItem = obj.GetComponent<Collectible>();
             if (colItem != null)
             {
@@ -263,32 +263,32 @@ namespace TanksMP
                 colItem.OnReturn();
             }
 
-            //cancel return timer as the object is now back at its base position
+            //hủy bỏ bộ đếm thời gian trả về vì đối tượng hiện đã trở lại vị trí căn cứ của nó
             if (PhotonNetwork.IsMasterClient)
                 StopAllCoroutines();
         }
 
 
         /// <summary>
-        /// Called by the spawned object to destroy itself on this managing component.
-        /// This could be the case when it has been collected by players.
+        /// Được gọi bởi đối tượng được tạo để tự hủy trên thành phần quản lý này.
+        /// Đây có thể là trường hợp khi nó được người chơi thu thập.
         /// </summary>
         [PunRPC]
 		public void Destroy()
 		{
-            //despawn object and clear references
+            //hủy đối tượng và xóa các tham chiếu
 			PoolManager.Despawn(obj);
             obj = null;
 			
-            //if it should respawn again, trigger a new coroutine
+            //nếu nó nên hồi sinh lại, kích hoạt một coroutine mới
 			if(PhotonNetwork.IsMasterClient && respawn)
                 StartCoroutine(SpawnRoutine());
 		}
         
         
         /// <summary>
-        /// Called by the spawned object to reset its respawn counter when it is despawned
-        /// in the scene. Also called on all clients with the current counter on host migration.
+        /// Được gọi bởi đối tượng được tạo để đặt lại bộ đếm hồi sinh khi nó bị hủy
+        /// trong scene. Cũng được gọi trên tất cả các máy khách với bộ đếm hiện tại khi chuyển đổi chủ phòng.
         /// </summary>
         [PunRPC]
         public void SetRespawn(float init = 0f)
@@ -302,7 +302,7 @@ namespace TanksMP
 
 
     /// <summary>
-    /// Collectible type used on the ObjectSpawner, to define whether the item is consumed or picked up.
+    /// Loại vật phẩm thu thập được sử dụng trên ObjectSpawner, để xác định xem vật phẩm được tiêu thụ hay được nhặt lên.
     /// </summary>
     public enum CollectionType
     {

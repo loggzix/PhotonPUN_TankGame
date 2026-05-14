@@ -1,23 +1,23 @@
-/*  This file is part of the "Tanks Multiplayer" project by FLOBUK.
- *  You are only allowed to use these resources if you've bought them from the Unity Asset Store.
- * 	You shall not license, sublicense, sell, resell, transfer, assign, distribute or
- * 	otherwise make available to any third party the Service or the Content. */
+/*  File này là một phần của dự án "Tanks Multiplayer" của FLOBUK.
+ *  Bạn chỉ được phép sử dụng các tài nguyên này nếu bạn đã mua chúng từ Unity Asset Store.
+ * 	Bạn không được cấp phép, cấp phép con, bán, bán lại, chuyển nhượng, chỉ định, phân phối hoặc
+ * 	cung cấp Dịch vụ hoặc Nội dung cho bất kỳ bên thứ ba nào. */
 
 using UnityEngine;
 
 namespace TanksMP
 {
     /// <summary>
-    /// Script that makes child objects non-destroyable on scene changes.
-    /// Only keeps one instance (the same) across the whole game.
+    /// Script làm cho các đối tượng con không bị hủy khi chuyển đổi scene.
+    /// Chỉ giữ lại một instance duy nhất trong suốt toàn bộ trò chơi.
     /// </summary>
     public class DontDestroyManager : MonoBehaviour
     {
-        //reference to this script instance
+        //tham chiếu đến instance của script này
         private static DontDestroyManager instance;
         
-        //set the whole gameobject to 'dont destroy',
-        //or destroy the other one if there's a duplicate
+        //đặt toàn bộ gameobject thành 'không hủy' (dont destroy),
+        //hoặc hủy cái còn lại nếu có sự trùng lặp
         void Awake()
         {
             if (instance == null)

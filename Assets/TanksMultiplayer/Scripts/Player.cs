@@ -1,7 +1,7 @@
-/*  This file is part of the "Tanks Multiplayer" project by FLOBUK.
- *  You are only allowed to use these resources if you've bought them from the Unity Asset Store.
- * 	You shall not license, sublicense, sell, resell, transfer, assign, distribute or
- * 	otherwise make available to any third party the Service or the Content. */
+/*  File này là một phần của dự án "Tanks Multiplayer" của FLOBUK.
+ *  Bạn chỉ được phép sử dụng các tài nguyên này nếu bạn đã mua chúng từ Unity Asset Store.
+ * 	Bạn không được cấp phép, cấp phép con, bán, bán lại, chuyển nhượng, chỉ định, phân phối hoặc
+ * 	cung cấp Dịch vụ hoặc Nội dung cho bất kỳ bên thứ ba nào. */
 
 using UnityEngine;
 using UnityEngine.UI;
@@ -12,187 +12,185 @@ using TMPro;
 namespace TanksMP
 {
     /// <summary>
-    /// Networked player class implementing movement control and shooting.
-    /// Contains both server and client logic in an authoritative approach.
-    /// </summary> 
-    public class Player : MonoBehaviourPunCallbacks, IPunObservable
+    /// Lớp người chơi được nối mạng thực hiện điều khiển di chuyển và bắn súng.
+    /// Chứa cả logic server và máy khách theo cách tiếp cận có thẩm quyền (authoritative).
+    /// </summary> 18:     public class Player : MonoBehaviourPunCallbacks, IPunObservable
     {
         /// <summary>
-        /// UI Text displaying the player name.
+        /// Văn bản UI hiển thị tên người chơi.
         /// </summary>    
         public TMP_Text label;
 
         /// <summary>
-        /// Maximum health value at game start.
+        /// Giá trị sức khỏe tối đa khi bắt đầu trò chơi.
         /// </summary>
         public int maxHealth = 10;
 
         /// <summary>
-        /// Current turret rotation and shooting direction.
+        /// Độ xoay hiện tại của tháp pháo và hướng bắn.
         /// </summary>
         [HideInInspector]
         public short turretRotation;
 
         /// <summary>
-        /// Delay between shots.
+        /// Độ trễ giữa các lần bắn.
         /// </summary>
         public float fireRate = 0.75f;
 
         /// <summary>
-        /// Movement speed in all directions.
+        /// Tốc độ di chuyển theo mọi hướng.
         /// </summary>
         public float moveSpeed = 8f;
 
         /// <summary>
-        /// UI Slider visualizing health value.
+        /// Thanh trượt UI hiển thị giá trị sức khỏe.
         /// </summary>
         public Slider healthSlider;
 
         /// <summary>
-        /// UI Slider visualizing shield value.
+        /// Thanh trượt UI hiển thị giá trị khiên.
         /// </summary>
         public Slider shieldSlider;
 
         /// <summary>
-        /// Clip to play when a shot has been fired.
+        /// Clip âm thanh phát ra khi bắn súng.
         /// </summary>
         public AudioClip shotClip;
 
         /// <summary>
-        /// Clip to play on player death.
+        /// Clip âm thanh phát ra khi người chơi chết.
         /// </summary>
         public AudioClip explosionClip;
 
         /// <summary>
-        /// Object to spawn on shooting.
+        /// Đối tượng được tạo ra khi bắn.
         /// </summary>
         public GameObject shotFX;
 
         /// <summary>
-        /// Object to spawn on player death.
+        /// Đối tượng được tạo ra khi người chơi chết.
         /// </summary>
         public GameObject explosionFX;
 
         /// <summary>
-        /// Turret to rotate with look direction.
+        /// Tháp pháo xoay theo hướng nhìn.
         /// </summary>
         public Transform turret;
 
         /// <summary>
-        /// Position to spawn new bullets at.
+        /// Vị trí để tạo đạn mới.
         /// </summary>
         public Transform shotPos;
 
         /// <summary>
-        /// Array of available bullets for shooting.
+        /// Mảng các loại đạn có sẵn để bắn.
         /// </summary>
         public GameObject[] bullets;
 
         /// <summary>
-        /// MeshRenderers that should be highlighted in team color.
+        /// Các MeshRenderer nên được làm nổi bật bằng màu của đội.
         /// </summary>
         public MeshRenderer[] renderers;
 
         /// <summary>
-        /// Last player gameobject that killed this one.
+        /// Đối tượng người chơi cuối cùng đã giết người chơi này.
         /// </summary>
         [HideInInspector]
         public GameObject killedBy;
 
         /// <summary>
-        /// Reference to the camera following component.
+        /// Tham chiếu đến thành phần theo dõi của camera.
         /// </summary>
         [HideInInspector]
         public FollowTarget camFollow;
 
-        //timestamp when next shot should happen
+        //dấu thời gian khi lần bắn tiếp theo có thể thực hiện
         private float nextFire;
         
-        //reference to this rigidbody
+        //tham chiếu đến rigidbody này
         #pragma warning disable 0649
 		private Rigidbody rb;
 		#pragma warning restore 0649
 
-        //movement input directly read from the keyboard/mobile joystick
+        //đầu vào di chuyển được đọc trực tiếp từ bàn phím/joystick di động
         private Vector2 moveInput;
-        //rotation input directly read from the mouse/mobile joystick
+        //đầu vào xoay được đọc trực tiếp từ chuột/joystick di động
         private Vector2 viewInput;
-        //whether the player is currently pressing input to shoot
+        //liệu người chơi hiện đang nhấn đầu vào để bắn hay không
         private bool shootInput;
 
 
-        //initialize server values for this player
+        //khởi tạo các giá trị server cho người chơi này
         void Awake()
         {
-            //only let the master do initialization
+            //chỉ để master thực hiện khởi tạo
             if(!PhotonNetwork.IsMasterClient)
                 return;
             
-            //set players current health value after joining
+            //đặt giá trị sức khỏe hiện tại của người chơi sau khi tham gia
             GetView().SetHealth(maxHealth);
         }
 
 
         /// <summary>
-        /// Initialize synced values on every client.
-        /// Initialize camera and input for this local client.
+        /// Khởi tạo các giá trị được đồng bộ trên mọi máy khách.
+        /// Khởi tạo camera và đầu vào cho máy khách cục bộ này.
         /// </summary>
         void Start()
         {           
-			//get corresponding team and colorize renderers in team color
+			//lấy đội tương ứng và tô màu các renderer theo màu của đội
             Team team = GameManager.GetInstance().teams[GetView().GetTeam()];
             for(int i = 0; i < renderers.Length; i++)
                 renderers[i].material = team.material;
 
-            //set name in label
+            //đặt tên trong nhãn (label)
             label.text = GetView().GetName();
-            //call hooks manually to update
+            //gọi các hook thủ công để cập nhật
             OnHealthChange(GetView().GetHealth());
             OnShieldChange(GetView().GetShield());
 
-            //called only for this client 
-            if (!photonView.IsMine)
+            //chỉ được gọi cho máy khách này 154:             if (!photonView.IsMine)
                 return;
 
-			//set a global reference to the local player
+			//đặt một tham chiếu toàn cục đến người chơi cục bộ
             GameManager.GetInstance().localPlayer = this;
 
-			//get components and set camera target
+			//lấy các thành phần và đặt mục tiêu cho camera
             rb = GetComponent<Rigidbody>();
             camFollow = Camera.main.GetComponent<FollowTarget>();
             camFollow.target = turret;
 
-            //initialize input controls
+            //khởi tạo các điều khiển đầu vào
             PlayerInput.GetPlayerByIndex(0).onActionTriggered += OnAction;
         }
 
 
         /// <summary>
-        /// This method gets called whenever player properties have been changed on the network.
+        /// Phương thức này được gọi bất cứ khi nào các thuộc tính của người chơi được thay đổi trên mạng.
         /// </summary>
         public override void OnPlayerPropertiesUpdate(Photon.Realtime.Player player, ExitGames.Client.Photon.Hashtable playerAndUpdatedProps)
         {
-            //only react on property changes for this player
+            //chỉ phản hồi khi có sự thay đổi thuộc tính cho người chơi này
             if(player != photonView.Owner)
                 return;
 
-            //update values that could change any time for visualization to stay up to date
+            //cập nhật các giá trị có thể thay đổi bất cứ lúc nào để việc hiển thị luôn được cập nhật
             OnHealthChange(player.GetHealth());
             OnShieldChange(player.GetShield());
         }
 
         
-        //this method gets called multiple times per second, at least 10 times or more
+        //phương thức này được gọi nhiều lần mỗi giây, ít nhất 10 lần hoặc hơn
         void IPunObservable.OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
         {        
             if (stream.IsWriting)
             {             
-                //here we send the turret rotation angle to other clients
+                //tại đây chúng ta gửi góc xoay tháp pháo đến các máy khách khác
                 stream.SendNext(turretRotation);
             }
             else
             {   
-                //here we receive the turret rotation angle from others and apply it
+                //tại đây chúng ta nhận góc xoay tháp pháo từ những người khác và áp dụng nó
                 this.turretRotation = (short)stream.ReceiveNext();
                 OnTurretRotation();
             }
@@ -200,7 +198,7 @@ namespace TanksMP
 
 
         /// <summary>
-        /// Helper method for getting the current object owner.
+        /// Phương thức hỗ trợ để lấy chủ sở hữu đối tượng hiện tại.
         /// </summary>
         public PhotonView GetView()
         {
@@ -208,7 +206,7 @@ namespace TanksMP
         }
 
 
-        //process input values
+        //xử lý các giá trị đầu vào
         void Update()
         {
             if(!photonView.IsMine)
@@ -220,20 +218,20 @@ namespace TanksMP
         }
 
 
-        //synchronize turret rotations from other players
+        //đồng bộ hóa các vòng xoay tháp pháo từ những người chơi khác
         void FixedUpdate()
 		{
-			//skip further calls for remote clients    
+			//bỏ qua các cuộc gọi tiếp theo cho các máy khách từ xa    
             if (!photonView.IsMine)
             {
-                //keep turret rotation updated for all clients
+                //luôn cập nhật độ xoay tháp pháo cho tất cả các máy khách
                 OnTurretRotation();
                 return;
             }
         }
             
       
-        //continously check for input
+        //liên tục kiểm tra đầu vào
         void OnAction(InputAction.CallbackContext context)
         {
             if(!gameObject.activeInHierarchy)
@@ -241,11 +239,11 @@ namespace TanksMP
 
             switch(context.action.name)
             {
-                //read out moving directions and calculate force
+                //đọc các hướng di chuyển và tính toán lực di chuyển
                 case "Move":
                     moveInput = context.ReadValue<Vector2>();
 
-                    //replicate input to mobile controls for illustration purposes
+                    //tái hiện đầu vào cho các điều khiển di động vì mục đích minh họa
                     #if UNITY_EDITOR
 				        RectTransform moveStick = GameManager.GetInstance().ui.controls[0].GetComponent<RectTransform>();
                         moveStick.anchoredPosition = moveInput * GameManager.GetInstance().ui.controls[0].movementRange;
@@ -255,7 +253,7 @@ namespace TanksMP
                 case "View":
                     viewInput = context.ReadValue<Vector2>();
 
-                    //normalize from mouse screen space to -1 to 1 range
+                    //chuẩn hóa từ không gian màn hình chuột sang phạm vi từ -1 đến 1
                     if(context.control.device.name == "Mouse")
                     {
                         Vector2 screenCenter = new Vector2(Screen.width / 2f, Screen.height / 2f);
@@ -264,25 +262,25 @@ namespace TanksMP
                         viewInput = normalized;
                     }
 
-                    //on mobile devices start shooting when using right stick
+                    //trên thiết bị di động, bắt đầu bắn khi sử dụng cần điều khiển bên phải
                     if(context.control.device.name != "Mouse")
                     {
                         bool isDragActive = viewInput != Vector2.zero;
-                        //set small delay for first shot
+                        //đặt một khoảng trễ nhỏ cho phát bắn đầu tiên
                         if(isDragActive && !shootInput)
                             nextFire = Time.time + 0.25f;
                         
                         shootInput = isDragActive;
                     }
 
-                    //replicate input to mobile controls for illustration purposes
+                    //tái hiện đầu vào cho các điều khiển di động vì mục đích minh họa
                     #if UNITY_EDITOR
 				        RectTransform viewStick = GameManager.GetInstance().ui.controls[1].GetComponent<RectTransform>();
                         viewStick.anchoredPosition = viewInput * GameManager.GetInstance().ui.controls[1].movementRange;
 			        #endif
                     break;
 
-                //shoot bullet on left mouse click
+                //bắn đạn khi nhấp chuột trái
                 case "Shoot":
                     shootInput = context.control.IsPressed();
                     break;
@@ -290,31 +288,31 @@ namespace TanksMP
         }
 
 
-        //moves rigidbody in the moving input direction
+        //di chuyển rigidbody theo hướng đầu vào di chuyển
         void ApplyMovement()
         {
-            //if direction is not zero, rotate player in the moving direction relative to camera
+            //nếu hướng khác không, hãy xoay người chơi theo hướng di chuyển so với camera
             if (moveInput == Vector2.zero)
                 return;
 
             transform.rotation = Quaternion.LookRotation(new Vector3(moveInput.x, 0, moveInput.y))
                                     * Quaternion.Euler(0, camFollow.camTransform.eulerAngles.y, 0);
             
-            //create movement vector based on current rotation and speed
+            //tạo vector di chuyển dựa trên độ xoay và tốc độ hiện tại
             Vector3 moveDir = transform.forward * moveSpeed * Time.deltaTime;
-            //apply vector to rigidbody position
+            //áp dụng vector vào vị trí rigidbody
             rb.MovePosition(rb.position + moveDir);
         }
 
 
-        //rotates turret to the rotation input direction
+        //xoay tháp pháo theo hướng đầu vào xoay nhìn
         void ApplyRotation()
         {
-			//don't rotate without values
+			//không xoay nếu không có giá trị đầu vào
             if(viewInput == Vector2.zero)
                 return;
 
-            //get rotation value as angle out of the direction we received
+            //lấy giá trị xoay dưới dạng góc từ hướng chúng ta nhận được
             turretRotation = (short)(Quaternion.LookRotation(new Vector3(viewInput.x, 0, viewInput.y)).eulerAngles.y + camFollow.camTransform.eulerAngles.y);
             OnTurretRotation();
         }
@@ -325,53 +323,53 @@ namespace TanksMP
         //along with the shot request to the server to absolutely ensure a synced shot position
         protected void Shoot(Vector2 direction = default(Vector2))
         {
-            //if shot delay is over  
+            //nếu độ trễ bắn đã hết  
             if (Time.time > nextFire)
             {
-                //set next shot timestamp
+                //đặt dấu thời gian cho phát bắn tiếp theo
                 nextFire = Time.time + fireRate;
                 
-                //send current client position and turret rotation along to sync the shot position
-                //also we are sending it as a short array (only x,z - skip y) to save additional bandwidth
+                //gửi vị trí máy khách hiện tại và vòng xoay tháp pháo đi kèm để đồng bộ vị trí bắn
+                //ngoài ra chúng ta gửi nó dưới dạng mảng short (chỉ x, z - bỏ qua y) để tiết kiệm thêm băng thông
                 short[] pos = new short[] { (short)(shotPos.position.x * 10), (short)(shotPos.position.z * 10)};
-                //send shot request with origin to server
+                //gửi yêu cầu bắn kèm theo nguồn gốc tới server
                 this.photonView.RPC("CmdShoot", RpcTarget.AllViaServer, pos, turretRotation);
             }
         }
         
         
-        //called on the server first but forwarded to all clients
+        //được gọi trên server trước nhưng được chuyển tiếp đến tất cả các máy khách
         [PunRPC]
         protected void CmdShoot(short[] position, short angle)
         {   
-            //get current bullet type
+            //lấy loại đạn hiện tại
             int currentBullet = GetView().GetBullet();
 
-            //calculate center between shot position sent and current server position (factor 0.6f = 40% client, 60% server)
-            //this is done to compensate network lag and smoothing it out between both client/server positions
+            //tính toán điểm giữa của vị trí bắn được gửi và vị trí hiện tại trên server (hệ số 0.6f = 40% máy khách, 60% server)
+            //điều này được thực hiện để bù đắp độ trễ mạng và làm mượt nó giữa cả hai vị trí máy khách/server
             Vector3 shotCenter = Vector3.Lerp(shotPos.position, new Vector3(position[0]/10f, shotPos.position.y, position[1]/10f), 0.6f);
             Quaternion syncedRot = turret.rotation = Quaternion.Euler(0, angle, 0);
 
-            //spawn bullet using pooling
+            //tạo đạn sử dụng pooling
             GameObject obj = PoolManager.Spawn(bullets[currentBullet], shotCenter, syncedRot);
             obj.GetComponent<Bullet>().owner = gameObject;
 
-            //check for current ammunition
-            //let the server decrease special ammunition, if present
+            //kiểm tra lượng đạn hiện tại
+            //để server giảm lượng đạn đặc biệt, nếu có
             if (PhotonNetwork.IsMasterClient && currentBullet != 0)
             {
-                //if ran out of ammo: reset bullet automatically
+                //nếu hết đạn: tự động đặt lại loại đạn mặc định
                 GetView().DecreaseAmmo(1);
             }
 
-            //send event to all clients for spawning effects
+            //gửi sự kiện tới tất cả các máy khách để tạo hiệu ứng bắn
             if (shotFX || shotClip)
                 RpcOnShot();
         }
 
 
-        //called on all clients after bullet spawn
-        //spawn effects or sounds locally, if set
+        //được gọi trên tất cả các máy khách sau khi tạo đạn
+        //tạo hiệu ứng hoặc âm thanh tại địa phương, nếu được thiết lập
         protected void RpcOnShot()
         {
             if (shotFX) PoolManager.Spawn(shotFX, shotPos.position, Quaternion.identity);
@@ -379,25 +377,25 @@ namespace TanksMP
         }
 
 
-        //hook for updating turret rotation locally
+        //hook để cập nhật vòng xoay tháp pháo tại máy khách cục bộ
         void OnTurretRotation()
         {
-            //we don't need to check for local ownership when setting the turretRotation,
-            //because OnPhotonSerializeView PhotonStream.isWriting == true only applies to the owner
+            //chúng ta không cần kiểm tra quyền sở hữu cục bộ khi đặt turretRotation,
+            //vì OnPhotonSerializeView PhotonStream.isWriting == true chỉ áp dụng cho chủ sở hữu
             turret.rotation = Quaternion.Euler(0, turretRotation, 0);
         }
 
 
-        //hook for updating health locally
-        //(the actual value updates via player properties)
+        //hook để cập nhật sức khỏe tại địa phương
+        //(giá trị thực tế cập nhật thông qua player properties)
         protected void OnHealthChange(int value)
         {
             healthSlider.value = (float)value / maxHealth;
         }
 
 
-        //hook for updating shield locally
-        //(the actual value updates via player properties)
+        //hook để cập nhật khiên tại địa phương
+        //(giá trị thực tế cập nhật thông qua player properties)
         protected void OnShieldChange(int value)
         {
             shieldSlider.value = value;
@@ -405,54 +403,54 @@ namespace TanksMP
 
 
         /// <summary>
-        /// Server only: calculate damage to be taken by the Player,
-		/// triggers score increase and respawn workflow on death.
+        /// Chỉ dành cho server: tính toán sát thương mà Người chơi phải nhận,
+		/// kích hoạt tăng điểm và quy trình hồi sinh khi chết.
         /// </summary>
         public void TakeDamage(Bullet bullet)
         {
-            //store network variables temporary
+            //lưu trữ tạm thời các biến mạng
             int health = GetView().GetHealth();
             int shield = GetView().GetShield();
 
-            //reduce shield on hit
+            //giảm khiên khi bị trúng đạn
             if (shield > 0)
             {
                 GetView().DecreaseShield(1);
                 return;
             }
 
-            //substract health by damage
-            //locally for now, to only have one update later on
+            //trừ sức khỏe theo sát thương
+            //tạm thời tại địa phương, để chỉ cập nhật một lần duy nhất sau đó
             health -= bullet.damage;
 
-            //bullet killed the player
+            //đạn đã tiêu diệt người chơi
             if (health <= 0)
             {
-                //the game is already over so don't do anything
+                //trò chơi đã kết thúc nên không làm gì thêm
                 if(GameManager.GetInstance().IsGameOver()) return;
 
-                //get killer and increase score for that enemy team
+                //lấy kẻ giết người và tăng điểm cho đội đối phương đó
                 Player other = bullet.owner.GetComponent<Player>();
                 int otherTeam = other.GetView().GetTeam();
                 if(GetView().GetTeam() != otherTeam)
                     GameManager.GetInstance().AddScore(ScoreType.Kill, otherTeam);
 
-                //the maximum score has been reached now
+                //điểm số tối đa đã đạt được ngay bây giờ
                 if(GameManager.GetInstance().IsGameOver())
                 {
-                    //close room for joining players
+                    //đóng phòng đối với những người chơi mới tham gia
                     PhotonNetwork.CurrentRoom.IsOpen = false;
-                    //tell all clients the winning team
+                    //thông báo cho tất cả các máy khách đội chiến thắng
                     this.photonView.RPC("RpcGameOver", RpcTarget.All, (byte)otherTeam);
                     return;
                 }
 
-                //the game is not over yet, reset runtime values
-                //also tell all clients to despawn this player
+                //trò chơi vẫn chưa kết thúc, hãy đặt lại các giá trị thời gian thực
+                //đồng thời thông báo cho tất cả các máy khách hủy đối tượng người chơi này
                 GetView().SetHealth(maxHealth);
                 GetView().SetBullet(0);
 
-                //clean up collectibles on this player by letting them drop down
+                //dọn dẹp các vật phẩm thu thập trên người chơi này bằng cách để chúng rơi xuống
                 Collectible[] collectibles = GetComponentsInChildren<Collectible>(true);
                 for (int i = 0; i < collectibles.Length; i++)
                 {
@@ -460,7 +458,7 @@ namespace TanksMP
                     collectibles[i].spawner.photonView.RPC("Drop", RpcTarget.AllBuffered, transform.position);
                 }
 
-                //tell the dead player who killed him (owner of the bullet)
+                //cho người chơi đã chết biết ai đã giết họ (chủ sở hữu viên đạn)
                 short senderId = 0;
                 if (bullet.owner != null)
                     senderId = (short)bullet.owner.GetComponent<PhotonView>().ViewID;
@@ -475,25 +473,25 @@ namespace TanksMP
         }
 
 
-        //called on all clients on both player death and respawn
-        //only difference is that on respawn, the client sends the request
+        //được gọi trên tất cả các máy khách khi người chơi chết và hồi sinh
+        //khác biệt duy nhất là khi hồi sinh, máy khách sẽ gửi yêu cầu
         [PunRPC]
         protected virtual void RpcRespawn(short senderId)
         {
-            //toggle visibility for player gameobject (on/off)
+            //chuyển đổi khả năng hiển thị cho gameobject người chơi (bật/tắt)
             gameObject.SetActive(!gameObject.activeInHierarchy);
             bool isActive = gameObject.activeInHierarchy;
             killedBy = null;
 
-            //the player has been killed
+            //người chơi đã bị giết
             if (!isActive)
             {
-                //find original sender game object (killedBy)
+                //tìm game object gửi ban đầu (killedBy)
                 PhotonView senderView = senderId > 0 ? PhotonView.Find(senderId) : null;
                 if (senderView != null && senderView.gameObject != null) killedBy = senderView.gameObject;
 
-                //detect whether the current user was responsible for the kill, but not for suicide
-                //yes, that's my kill: increase local kill counter
+                //phát hiện xem người dùng hiện tại có chịu trách nhiệm cho mạng tiêu diệt này không, nhưng không phải tự sát
+                //đúng, đó là mạng tiêu diệt của tôi: tăng bộ đếm mạng tiêu diệt tại địa phương
                 if (this != GameManager.GetInstance().localPlayer && killedBy == GameManager.GetInstance().localPlayer.gameObject)
                 {
                     GameManager.GetInstance().ui.killCounter[0].text = (int.Parse(GameManager.GetInstance().ui.killCounter[0].text) + 1).ToString();
@@ -502,47 +500,47 @@ namespace TanksMP
 
                 if (explosionFX)
                 {
-                    //spawn death particles locally using pooling and colorize them in the player's team color
+                    //tạo các hạt hiệu ứng chết tại địa phương bằng cách sử dụng pooling và tô màu chúng theo màu đội của người chơi
                     GameObject particle = PoolManager.Spawn(explosionFX, transform.position, transform.rotation);
                     ParticleColor pColor = particle.GetComponent<ParticleColor>();
                     if (pColor) pColor.SetColor(GameManager.GetInstance().teams[GetView().GetTeam()].material.color);
                 }
 
-                //play sound clip on player death
+                //phát clip âm thanh khi người chơi chết
                 if (explosionClip) AudioManager.Play3D(explosionClip, transform.position);
             }
 
             if (PhotonNetwork.IsMasterClient)
             {
-                //send player back to the team area, this will get overwritten by the exact position from the client itself later on
-                //we just do this to avoid players "popping up" from the position they died and then teleporting to the team area instantly
-                //this is manipulating the internal PhotonTransformView cache to update the networkPosition variable
+                //gửi người chơi trở lại khu vực đội, điều này sẽ bị ghi đè bởi vị trí chính xác từ chính máy khách sau đó
+                //chúng ta làm điều này để tránh việc người chơi "đột ngột hiện ra" từ vị trí họ đã chết và sau đó dịch chuyển đến khu vực đội ngay lập tức
+                //điều này đang thao túng bộ đệm PhotonTransformView nội bộ để cập nhật biến networkPosition
                 GetComponent<PhotonTransformView>().OnPhotonSerializeView(new PhotonStream(false, new object[] { GameManager.GetInstance().GetSpawnPosition(GetView().GetTeam()),
                                                                                                                  Vector3.zero, Quaternion.identity }), new PhotonMessageInfo());
             }
 
-            //further changes only affect the local client
+            //các thay đổi tiếp theo chỉ ảnh hưởng đến máy khách cục bộ
             if (!photonView.IsMine)
                 return;
 
-            //local player got respawned so reset states
+            //người chơi cục bộ đã được hồi sinh nên hãy đặt lại các trạng thái
             if (isActive == true)
                 ResetPosition();
             else
             {
-                //local player was killed, set camera to follow the killer
+                //người chơi cục bộ đã bị tiêu diệt, hãy đặt camera theo dõi kẻ giết người
                 if (killedBy != null) camFollow.target = killedBy.transform;
-                //hide input controls and other HUD elements
+                //ẩn các điều khiển đầu vào và các phần tử HUD khác
                 camFollow.HideMask(true);
-                //display respawn window (only for local player)
+                //hiển thị cửa sổ hồi sinh (chỉ dành cho người chơi cục bộ)
                 GameManager.GetInstance().DisplayDeath();
             }
         }
 
 
         /// <summary>
-        /// Command telling the server and all others that this client is ready for respawn.
-        /// This is when the respawn delay is over or a video ad has been watched.
+        /// Lệnh thông báo cho server và tất cả những người khác rằng máy khách này đã sẵn sàng để hồi sinh.
+        /// Điều này diễn ra khi độ trễ hồi sinh đã hết hoặc một quảng cáo video đã được xem.
         /// </summary>
         public void CmdRespawn()
         {
@@ -551,34 +549,34 @@ namespace TanksMP
 
 
         /// <summary>
-        /// Repositions in team area and resets camera & input variables.
-        /// This should only be called for the local player.
+        /// Định vị lại trong khu vực đội và đặt lại camera cũng như các biến đầu vào.
+        /// Việc này chỉ nên được gọi cho người chơi cục bộ.
         /// </summary>
         public void ResetPosition()
         {
-            //start following the local player again
+            //bắt đầu theo dõi lại người chơi cục bộ
             camFollow.target = turret;
             camFollow.HideMask(false);
 
-            //get team area and reposition it there
+            //lấy khu vực đội và định vị lại ở đó
             transform.position = GameManager.GetInstance().GetSpawnPosition(GetView().GetTeam());
 
-            //reset input left over
+            //đặt lại các đầu vào còn sót lại
             moveInput = Vector2.zero;
             viewInput = Vector2.zero;
             shootInput = false;
-            //also on joystick controls
+            //cũng trên các điều khiển joystick
             GameManager.GetInstance().ui.controls[0].OnPointerUp(null);
             GameManager.GetInstance().ui.controls[1].OnPointerUp(null);
 
-            //reset forces modified by input
+            //đặt lại các lực bị thay đổi bởi đầu vào
             rb.linearVelocity = Vector3.zero;
             rb.angularVelocity = Vector3.zero;
             transform.rotation = Quaternion.identity;
         }
 
 
-        //called on all clients on game end providing the winning team
+        //được gọi trên tất cả các máy khách khi kết thúc trò chơi cung cấp đội chiến thắng
         [PunRPC]
         protected void RpcGameOver(byte teamIndex)
         {

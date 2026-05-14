@@ -1,7 +1,7 @@
-﻿/*  This file is part of the "Tanks Multiplayer" project by FLOBUK.
- *  You are only allowed to use these resources if you've bought them from the Unity Asset Store.
- * 	You shall not license, sublicense, sell, resell, transfer, assign, distribute or
- * 	otherwise make available to any third party the Service or the Content. */
+/*  File này là một phần của dự án "Tanks Multiplayer" của FLOBUK.
+ *  Bạn chỉ được phép sử dụng các tài nguyên này nếu bạn đã mua chúng từ Unity Asset Store.
+ * 	Bạn không được cấp phép, cấp phép con, bán, bán lại, chuyển nhượng, chỉ định, phân phối hoặc
+ * 	cung cấp Dịch vụ hoặc Nội dung cho bất kỳ bên thứ ba nào. */
 
 using UnityEngine;
 using Photon.Pun;
@@ -9,32 +9,32 @@ using Photon.Pun;
 namespace TanksMP
 {
     /// <summary>
-    /// Base class for all derived Collectibles (health, shields, etc.) consumed or carried around.
-    /// Extend this to create highly customized Collectible with specific functionality.
+    /// Lớp cơ sở cho tất cả các vật phẩm thu thập (máu, khiên, v.v.) được tiêu thụ hoặc mang theo.
+    /// Kế thừa lớp này để tạo ra Vật phẩm thu thập tùy chỉnh cao với các chức năng cụ thể.
     /// </summary>
 	public class Collectible : MonoBehaviour
 	{	    
         /// <summary>
-        /// Clip to play when this Collectible is consumed by a player.
+        /// Clip âm thanh phát ra khi Vật phẩm thu thập này được người chơi tiêu thụ.
         /// </summary>
         public AudioClip useClip;
 
         /// <summary>
-        /// Reference to the local object (script) that spawned this Collectible.
+        /// Tham chiếu đến đối tượng cục bộ (script) đã tạo ra Vật phẩm thu thập này.
         /// </summary>
         [HideInInspector]
         public ObjectSpawner spawner;
 
         /// <summary>
-        /// Persistent network (PhotonView) ID of the Player that picked up this Collectible.
+        /// ID mạng (PhotonView) cố định của Người chơi đã nhặt Vật phẩm thu thập này.
         /// </summary>
         [HideInInspector]
         public int carrierId = -1;
         
                   
         /// <summary>
-        /// Server only: check for players colliding with this item.
-        /// Possible collision are defined in the Physics Matrix.
+        /// Chỉ dành cho server: kiểm tra các người chơi va chạm với vật phẩm này.
+        /// Các va chạm có thể xảy ra được xác định trong Physics Matrix.
         /// </summary>
         public virtual void OnTriggerEnter(Collider col)
 		{
@@ -44,22 +44,22 @@ namespace TanksMP
     		GameObject obj = col.gameObject;
 			Player player = obj.GetComponent<Player>();
 
-            //try to apply collectible to player, the result should be true
+            //thử áp dụng vật phẩm thu thập cho người chơi, kết quả nên là true
             if (Apply(player))
             {
-                //destroy after use
+                //hủy sau khi sử dụng
                 spawner.photonView.RPC("Destroy", RpcTarget.All);           
             }
 		}
 
 
         /// <summary>
-        /// Tries to apply the Collectible to a colliding player. Returns 'true' if consumed.
-        /// Override this method in your own Collectible script to implement custom behavior.
+        /// Thử áp dụng Vật phẩm thu thập cho người chơi va chạm. Trả về 'true' nếu đã tiêu thụ.
+        /// Ghi đè phương thức này trong script Collectible của riêng bạn để triển khai hành vi tùy chỉnh.
         /// </summary>
         public virtual bool Apply(Player p)
 		{
-            //do something to the player
+            //làm gì đó với người chơi
             if (p == null)
                 return false;
             else
@@ -68,8 +68,8 @@ namespace TanksMP
 
 
         /// <summary>
-        /// Virtual implementation called when this Collectible gets picked up.
-        /// This is called for CollectionType = Pickup items only.
+        /// Triển khai ảo được gọi khi Vật phẩm thu thập này được nhặt lên.
+        /// Cái này chỉ được gọi cho các vật phẩm có CollectionType = Pickup.
         /// </summary>
         public virtual void OnPickup()
         {
@@ -77,8 +77,8 @@ namespace TanksMP
 
 
         /// <summary>
-        /// Virtual implementation called when this Collectible gets dropped on player death.
-        /// This is called for CollectionType = Pickup items only.
+        /// Triển khai ảo được gọi khi Vật phẩm thu thập này bị rơi khi người chơi chết.
+        /// Cái này chỉ được gọi cho các vật phẩm có CollectionType = Pickup.
         /// </summary>
         public virtual void OnDrop()
         {
@@ -86,16 +86,16 @@ namespace TanksMP
 
 
         /// <summary>
-        /// Virtual implementation called when this Collectible gets returned.
-        /// This is called for CollectionType = Pickup items only.
+        /// Triển khai ảo được gọi khi Vật phẩm thu thập này được trả lại.
+        /// Cái này chỉ được gọi cho các vật phẩm có CollectionType = Pickup.
         /// </summary>
         public virtual void OnReturn()
         {
         }
 
 
-        //if consumed, play audio clip. Now with the Collectible despawned,
-        //set the next spawn time on the managing ObjectSpawner script
+        //nếu đã tiêu thụ, phát clip âm thanh. Bây giờ khi Vật phẩm thu thập đã biến mất,
+        //thiết lập thời gian hồi sinh tiếp theo trên script quản lý ObjectSpawner
         void OnDespawn()
         {
             if (useClip) AudioManager.Play3D(useClip, transform.position);

@@ -1,26 +1,26 @@
-﻿/*  This file is part of the "Tanks Multiplayer" project by FLOBUK.
- *  You are only allowed to use these resources if you've bought them from the Unity Asset Store.
- * 	You shall not license, sublicense, sell, resell, transfer, assign, distribute or
- * 	otherwise make available to any third party the Service or the Content. */
+/*  File này là một phần của dự án "Tanks Multiplayer" của FLOBUK.
+ *  Bạn chỉ được phép sử dụng các tài nguyên này nếu bạn đã mua chúng từ Unity Asset Store.
+ * 	Bạn không được cấp phép, cấp phép con, bán, bán lại, chuyển nhượng, chỉ định, phân phối hoặc
+ * 	cung cấp Dịch vụ hoặc Nội dung cho bất kỳ bên thứ ba nào. */
 
 using UnityEngine;
 
 namespace TanksMP
 {
     /// <summary>
-    /// Custom powerup implementation for adding player health points.
+    /// Triển khai powerup tùy chỉnh để thêm điểm máu cho người chơi.
     /// </summary>
 	public class PowerupHealth : Collectible
     {
         /// <summary>
-        /// Amount of health points to add per consumption.
+        /// Số điểm máu cần thêm cho mỗi lần tiêu thụ.
         /// </summary>
         public int amount = 5;
 
 
         /// <summary>
-        /// Overrides the default behavior with a custom implementation.
-        /// Check for the current health and adds additional health.
+        /// Ghi đè hành vi mặc định bằng một triển khai tùy chỉnh.
+        /// Kiểm tra máu hiện tại và thêm máu bổ sung.
         /// </summary>
         public override bool Apply(Player p)
         {
@@ -29,20 +29,20 @@ namespace TanksMP
 
             int value = p.GetView().GetHealth();
 
-            //don't add health if it is at the maximum already
+            //không thêm máu nếu nó đã ở mức tối đa rồi
             if (value == p.maxHealth)
                 return false;
 
-            //get current health value and add amount to it
+            //lấy giá trị máu hiện tại và thêm lượng máu vào đó
             value += amount;
 
-            //we have to clamp the health to the maximum, so that
-            //we don't go over the maximum by accident. Then assign
-            //the new health value back to the player
+            //chúng ta phải giới hạn (clamp) máu ở mức tối đa, để
+            //chúng ta không vô tình vượt quá giới hạn. Sau đó gán
+            //giá trị máu mới lại cho người chơi
             value = Mathf.Clamp(value, value, p.maxHealth);
             p.GetView().SetHealth(value);
 
-            //return successful collection
+            //trả về thu thập thành công
             return true;
         }
     }

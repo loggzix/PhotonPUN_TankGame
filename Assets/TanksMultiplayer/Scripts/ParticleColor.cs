@@ -1,26 +1,26 @@
-/*  This file is part of the "Tanks Multiplayer" project by FLOBUK.
- *  You are only allowed to use these resources if you've bought them from the Unity Asset Store.
- * 	You shall not license, sublicense, sell, resell, transfer, assign, distribute or
- * 	otherwise make available to any third party the Service or the Content. */
+/*  File này là một phần của dự án "Tanks Multiplayer" của FLOBUK.
+ *  Bạn chỉ được phép sử dụng các tài nguyên này nếu bạn đã mua chúng từ Unity Asset Store.
+ * 	Bạn không được cấp phép, cấp phép con, bán, bán lại, chuyển nhượng, chỉ định, phân phối hoặc
+ * 	cung cấp Dịch vụ hoặc Nội dung cho bất kỳ bên thứ ba nào. */
 
 using UnityEngine;
 
 namespace TanksMP
 {
     /// <summary>
-    /// Modifies the starting color of a particle system to the color passed in.
-    /// This is used on the player death particles to match the player's team color.
+    /// Sửa đổi màu bắt đầu của hệ thống hạt (particle system) thành màu được truyền vào.
+    /// Điều này được sử dụng trên các hạt khi người chơi chết để khớp với màu của đội người chơi.
     /// </summary>
     public class ParticleColor : MonoBehaviour
     {
         /// <summary>
-        /// Array for particle systems that should be colored.
+        /// Mảng các hệ thống hạt cần được tô màu.
         /// </summary>
         public ParticleSystem[] particles;
 
         /// <summary>
-        /// Iterates over all particles and assigns the color passed in,
-        /// but ignoring the alpha value of the new color.
+        /// Lặp qua tất cả các hạt và gán màu được truyền vào,
+        /// nhưng bỏ qua giá trị alpha của màu mới.
         /// </summary>
         public void SetColor(Color color)
         {

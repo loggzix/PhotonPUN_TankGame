@@ -1,7 +1,7 @@
-/*  This file is part of the "Tanks Multiplayer" project by FLOBUK.
- *  You are only allowed to use these resources if you've bought them from the Unity Asset Store.
- * 	You shall not license, sublicense, sell, resell, transfer, assign, distribute or
- * 	otherwise make available to any third party the Service or the Content. */
+/*  File này là một phần của dự án "Tanks Multiplayer" của FLOBUK.
+ *  Bạn chỉ được phép sử dụng các tài nguyên này nếu bạn đã mua chúng từ Unity Asset Store.
+ * 	Bạn không được cấp phép, cấp phép con, bán, bán lại, chuyển nhượng, chỉ định, phân phối hoặc
+ * 	cung cấp Dịch vụ hoặc Nội dung cho bất kỳ bên thứ ba nào. */
 
 using System.Collections;
 using UnityEngine;
@@ -13,57 +13,57 @@ using UnityEngine.Advertisements;
 namespace TanksMP
 {
     /// <summary>
-    /// Manages game workflow and provides high-level access to networked logic during a game.
-    /// It manages functions such as team fill, scores and ending a game, but also video ad results.
+    /// Quản lý luồng công việc của trò chơi và cung cấp quyền truy cập cấp cao vào logic mạng trong suốt trò chơi.
+    /// Nó quản lý các chức năng như lấp đầy đội, điểm số và kết thúc trò chơi, cũng như kết quả quảng cáo video.
     /// </summary>
     public class GameManager : MonoBehaviourPun
     {
-        //reference to this script instance
+        //tham chiếu đến instance của script này
         private static GameManager instance;
 
         /// <summary>
-        /// The local player instance spawned for this client.
+        /// Instance người chơi cục bộ được tạo cho máy khách này.
         /// </summary>
         [HideInInspector]
         public Player localPlayer;
 
         /// <summary>
-        /// Active game mode played in the current scene.
+        /// Chế độ trò chơi đang hoạt động trong scene hiện tại.
         /// </summary>
         public GameMode gameMode = GameMode.TDM;
 
         /// <summary>
-        /// Reference to the UI script displaying game stats.
+        /// Tham chiếu đến script UI hiển thị số liệu thống kê trò chơi.
         /// </summary>
         public UIGame ui;
 
         /// <summary>
-        /// Definition of playing teams with additional properties.
+        /// Định nghĩa các đội chơi với các thuộc tính bổ sung.
         /// </summary>
         public Team[] teams;
 
         /// <summary>
-        /// The maximum amount of kills to reach before ending the game.
+        /// Số lượng mạng tiêu diệt tối đa cần đạt được trước khi kết thúc trò chơi.
         /// </summary>
         public int maxScore = 30;
 
         /// <summary>
-        /// The delay in seconds before respawning a player after it got killed.
+        /// Độ trễ tính bằng giây trước khi hồi sinh một người chơi sau khi bị tiêu diệt.
         /// </summary>
         public int respawnTime = 5;
 
         /// <summary>
-        /// Enable or disable friendly fire. This is verified in the Bullet script on collision.
+        /// Bật hoặc tắt sát thương đồng đội. Điều này được xác minh trong script Bullet khi va chạm.
         /// </summary>
         public bool friendlyFire = false;
 
 
-        //initialize variables
+        //khởi tạo các biến
         void Awake()
         {
             instance = this;
 
-            //if Unity Ads is enabled, hook up its result callback
+            //nếu Unity Ads được bật, hãy kết nối callback kết quả của nó
             #if UNITY_ADS
                 UnityAdsManager.adResultEvent += HandleAdResult;
             #endif
@@ -71,7 +71,7 @@ namespace TanksMP
 
 
         /// <summary>
-        /// Returns a reference to this script instance.
+        /// Trả về tham chiếu đến instance của script này.
         /// </summary>
         public static GameManager GetInstance()
         {
@@ -80,7 +80,7 @@ namespace TanksMP
         
         
         /// <summary>
-        /// Global check whether this client is the match master or not.
+        /// Kiểm tra toàn cục xem máy khách này có phải là master của trận đấu hay không.
         /// </summary>
         public static bool isMaster()
         {
@@ -89,20 +89,20 @@ namespace TanksMP
 
 
         /// <summary>
-        /// Returns the next team index a player should be assigned to.
+        /// Trả về chỉ số đội tiếp theo mà người chơi nên được gán vào.
         /// </summary>
         public int GetTeamFill()
         {
-            //init variables
+            //khởi tạo các biến
             int[] size = PhotonNetwork.CurrentRoom.GetSize();
             int teamNo = 0;
 
             int min = size[0];
-            //loop over teams to find the lowest fill
+            //lặp qua các đội để tìm đội có ít người nhất
             for (int i = 0; i < teams.Length; i++)
             {
-                //if fill is lower than the previous value
-                //store new fill and team for next iteration
+                //nếu số lượng ít hơn giá trị trước đó
+                //lưu số lượng và đội mới cho lần lặp tiếp theo
                 if (size[i] < min)
                 {
                     min = size[i];
@@ -110,29 +110,29 @@ namespace TanksMP
                 }
             }
 
-            //return index of lowest team
+            //trả về chỉ số của đội có ít người nhất
             return teamNo;
         }
 
 
         /// <summary>
-        /// Returns a random spawn position within the team's spawn area.
+        /// Trả về một vị trí spawn ngẫu nhiên trong khu vực spawn của đội.
         /// </summary>
         public Vector3 GetSpawnPosition(int teamIndex)
         {
-            //init variables
+            //khởi tạo các biến
             Vector3 pos = teams[teamIndex].spawn.position;
             BoxCollider col = teams[teamIndex].spawn.GetComponent<BoxCollider>();
 
             if(col != null)
             {
-                //find a position within the box collider range, first set fixed y position
-                //the counter determines how often we are calculating a new position if out of range
+                //tìm một vị trí trong phạm vi box collider, trước tiên đặt vị trí y cố định
+                //biến counter xác định tần suất chúng ta tính toán lại vị trí mới nếu nằm ngoài phạm vi
                 pos.y = col.transform.position.y;
                 int counter = 10;
                 
-                //try to get random position within collider bounds
-                //if it's not within bounds, do another iteration
+                //cố gắng lấy vị trí ngẫu nhiên trong giới hạn collider
+                //nếu không nằm trong giới hạn, thực hiện một lần lặp khác
                 do
                 {
                     pos.x = UnityEngine.Random.Range(col.bounds.min.x, col.bounds.max.x);
@@ -146,21 +146,21 @@ namespace TanksMP
         }
 
 
-        //implements what to do when an ad view completes
+        //thực hiện những việc cần làm khi xem xong quảng cáo
         #if UNITY_ADS
         void HandleAdResult(ShowResult result)
         {
             switch (result)
             {
-                //in case the player successfully watched an ad,
-                //it sends a request for it be respawned
+                //trong trường hợp người chơi xem xong quảng cáo thành công,
+                //nó sẽ gửi một yêu cầu để được hồi sinh
                 case ShowResult.Finished:
                     localPlayer.CmdRespawn();
                     break;
                 
-                //in case the ad can't be shown, just handle it
-                //like we wouldn't have tried showing a video ad
-                //with the regular death countdown (force ad skip)
+                //trong trường hợp quảng cáo không thể hiển thị, chỉ cần xử lý nó
+                //giống như chúng ta chưa thử hiển thị quảng cáo video
+                //với bộ đếm ngược cái chết thông thường (buộc bỏ qua quảng cáo)
                 case ShowResult.Failed:
                     DisplayDeath(true);
                     break;
@@ -170,15 +170,15 @@ namespace TanksMP
 
 
         /// <summary>
-        /// Adds points to the target team depending on matching game mode and score type.
-        /// This allows us for granting different amount of points on different score actions.
+        /// Cộng điểm cho đội mục tiêu tùy thuộc vào chế độ trò chơi và loại điểm tương ứng.
+        /// Điều này cho phép chúng ta cấp lượng điểm khác nhau cho các hành động ghi điểm khác nhau.
         /// </summary>
         public void AddScore(ScoreType scoreType, int teamIndex)
         {
-            //distinguish between game mode
+            //phân biệt giữa các chế độ trò chơi
             switch(gameMode)
             {
-                //in TDM, we only grant points for killing
+                //trong TDM, chúng ta chỉ cấp điểm cho việc tiêu diệt
                 case GameMode.TDM:
                     switch(scoreType)
                     {
@@ -188,7 +188,7 @@ namespace TanksMP
                     }
                 break;
 
-                //in CTF, we grant points for both killing and flag capture
+                //trong CTF, chúng ta cấp điểm cho cả việc tiêu diệt và chiếm cờ
                 case GameMode.CTF:
                     switch(scoreType)
                     {
@@ -206,19 +206,19 @@ namespace TanksMP
         
 
         /// <summary>
-        /// Returns whether a team reached the maximum game score.
+        /// Trả về việc một đội đã đạt đến điểm số tối đa của trò chơi hay chưa.
         /// </summary>
         public bool IsGameOver()
         {
-            //init variables
+            //khởi tạo các biến
             bool isOver = false;
             int[] score = PhotonNetwork.CurrentRoom.GetScore();
             
-            //loop over teams to find the highest score
+            //lặp qua các đội để tìm điểm số cao nhất
             for(int i = 0; i < teams.Length; i++)
             {
-                //score is greater or equal to max score,
-                //which means the game is finished
+                //điểm số lớn hơn hoặc bằng điểm tối đa,
+                //nghĩa là trò chơi đã kết thúc
                 if(score[i] >= maxScore)
                 {
                     isOver = true;
@@ -226,69 +226,69 @@ namespace TanksMP
                 }
             }
             
-            //return the result
+            //trả về kết quả
             return isOver;
         }
         
         
         /// <summary>
-        /// Only for this player: sets the death text stating the killer on death.
-        /// If Unity Ads is enabled, tries to show an ad during the respawn delay.
-        /// By using the 'skipAd' parameter is it possible to force skipping ads.
+        /// Chỉ dành cho người chơi này: thiết lập văn bản báo tử cho biết kẻ giết người khi chết.
+        /// Nếu Unity Ads được bật, cố gắng hiển thị quảng cáo trong thời gian chờ hồi sinh.
+        /// Bằng cách sử dụng tham số 'skipAd', có thể buộc bỏ qua quảng cáo.
         /// </summary>
         public void DisplayDeath(bool skipAd = false)
         {
-            //get the player component that killed us
+            //lấy thành phần player đã giết chúng ta
             Player other = localPlayer;
             string killedByName = "YOURSELF";
             if(localPlayer.killedBy != null)
                 other = localPlayer.killedBy.GetComponent<Player>();
 
-            //suicide or regular kill?
+            //tự sát hay bị giết bình thường?
             if (other != localPlayer)
             {
                 killedByName = other.GetView().GetName();
-                //increase local death counter for this game
+                //tăng bộ đếm mạng tiêu diệt cục bộ cho trò chơi này
                 ui.killCounter[1].text = (int.Parse(ui.killCounter[1].text) + 1).ToString();
                 ui.killCounter[1].GetComponent<Animator>().Play("Animation");
             }
 
-            //calculate if we should show a video ad
+            //tính toán xem chúng ta có nên hiển thị quảng cáo video không
             #if UNITY_ADS
             if (!skipAd && UnityAdsManager.ShowAd())
                 return;
             #endif
 
-            //when no ad is being shown, set the death text
-            //and start waiting for the respawn delay immediately
+            //khi không có quảng cáo nào được hiển thị, hãy đặt văn bản báo tử
+            //và bắt đầu chờ đợi độ trễ hồi sinh ngay lập tức
             ui.SetDeathText(killedByName, teams[other.GetView().GetTeam()]);
             StartCoroutine(SpawnRoutine());
         }
 
 
-        //coroutine spawning the player after a respawn delay
+        //coroutine hồi sinh người chơi sau một khoảng thời gian chờ hồi sinh
         IEnumerator SpawnRoutine()
         {
-            //calculate point in time for respawn
+            //tính toán thời điểm hồi sinh
             float targetTime = Time.time + respawnTime;
 
-            //wait for the respawn to be over,
-            //while waiting update the respawn countdown
+            //chờ cho đến khi việc hồi sinh kết thúc,
+            //trong khi chờ đợi hãy cập nhật bộ đếm ngược hồi sinh
             while (targetTime - Time.time > 0)
             {
                 ui.SetSpawnDelay(targetTime - Time.time);
                 yield return null;
             }
 
-            //respawn now: send request to the server
+            //hồi sinh ngay bây giờ: gửi yêu cầu đến server
             ui.DisableDeath();
             localPlayer.CmdRespawn();
         }
 
 
         /// <summary>
-        /// Only for this player: sets game over text stating the winning team.
-        /// Disables player movement so no updates are sent through the network.
+        /// Chỉ dành cho người chơi này: thiết lập văn bản kết thúc trò chơi cho biết đội chiến thắng.
+        /// Vô hiệu hóa việc di chuyển của người chơi để không có bản cập nhật nào được gửi qua mạng.
         /// </summary>
         public void DisplayGameOver(int teamIndex)
         {
@@ -297,25 +297,25 @@ namespace TanksMP
             localPlayer.camFollow.HideMask(true);
             ui.SetGameOverText(teams[teamIndex]);
 
-            //starts coroutine for displaying the game over window
+            //bắt đầu coroutine để hiển thị cửa sổ kết thúc trò chơi
             StopCoroutine(SpawnRoutine());
             StartCoroutine(DisplayGameOver());
         }
 
 
-        //displays game over window after short delay
+        //hiển thị cửa sổ kết thúc trò chơi sau một khoảng trễ ngắn
         IEnumerator DisplayGameOver()
         {
-            //give the user a chance to read which team won the game
-            //before enabling the game over screen
+            //cho người dùng cơ hội đọc xem đội nào đã thắng trò chơi
+            //trước khi bật màn hình kết thúc trò chơi
             yield return new WaitForSeconds(3);
 
-            //show game over window (still connected at that point)
+            //hiển thị cửa sổ kết thúc trò chơi (vẫn còn kết nối tại thời điểm đó)
             ui.ShowGameOver();
         }
 
 
-        //clean up callbacks on scene switches
+        //dọn dẹp các callback khi chuyển đổi scene
         void OnDestroy()
         {
             #if UNITY_ADS
@@ -326,32 +326,32 @@ namespace TanksMP
 
 
     /// <summary>
-    /// Defines properties of a team.
+    /// Định nghĩa các thuộc tính của một đội.
     /// </summary>
     [System.Serializable]
     public class Team
     {
         /// <summary>
-        /// The name of the team shown on game over.
+        /// Tên của đội được hiển thị khi kết thúc trò chơi.
         /// </summary>
         public string name;
 
         /// <summary>
-        /// The color of a team for UI and player prefabs.
+        /// Màu sắc của một đội cho UI và các prefab người chơi.
         /// </summary>   
         public Material material;
 
         /// <summary>
-        /// The spawn point of a team in the scene. In case it has a BoxCollider
-        /// component attached, a point within the collider bounds will be used.
+        /// Điểm spawn của một đội trong scene. Trong trường hợp nó có một thành phần BoxCollider
+        /// đi kèm, một điểm trong giới hạn của collider sẽ được sử dụng.
         /// </summary>
         public Transform spawn;
     }
 
 
     /// <summary>
-    /// Defines the types that could grant points to players or teams.
-    /// Used in the AddScore() method for filtering.
+    /// Định nghĩa các loại hành động có thể cấp điểm cho người chơi hoặc đội.
+    /// Được sử dụng trong phương thức AddScore() để lọc.
     /// </summary>
     public enum ScoreType
     {
@@ -361,18 +361,18 @@ namespace TanksMP
 
 
     /// <summary>
-    /// Available game modes selected per scene.
-    /// Used in the AddScore() method for filtering.
+    /// Các chế độ trò chơi có sẵn được chọn theo từng scene.
+    /// Được sử dụng trong phương thức AddScore() để lọc.
     /// </summary>
     public enum GameMode
     {
         /// <summary>
-        /// Team Deathmatch
+        /// Chế độ Team Deathmatch
         /// </summary>
         TDM,
 
         /// <summary>
-        /// Capture The Flag
+        /// Chế độ Capture The Flag
         /// </summary>
         CTF
     }

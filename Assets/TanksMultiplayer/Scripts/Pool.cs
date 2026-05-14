@@ -1,7 +1,7 @@
-/*  This file is part of the "Tanks Multiplayer" project by FLOBUK.
- *  You are only allowed to use these resources if you've bought them from the Unity Asset Store.
- * 	You shall not license, sublicense, sell, resell, transfer, assign, distribute or
- * 	otherwise make available to any third party the Service or the Content. */
+/*  File này là một phần của dự án "Tanks Multiplayer" của FLOBUK.
+ *  Bạn chỉ được phép sử dụng các tài nguyên này nếu bạn đã mua chúng từ Unity Asset Store.
+ * 	Bạn không được cấp phép, cấp phép con, bán, bán lại, chuyển nhượng, chỉ định, phân phối hoặc
+ * 	cung cấp Dịch vụ hoặc Nội dung cho bất kỳ bên thứ ba nào. */
 
 using System.Collections;
 using System.Collections.Generic;
@@ -10,53 +10,53 @@ using UnityEngine;
 namespace TanksMP
 {
     /// <summary>
-    /// Child class interacting and managed by the PoolManager.
-    /// Handles all internal spawning/despawning of active/inactive instances.
+    /// Lớp con tương tác và được quản lý bởi PoolManager.
+    /// Xử lý tất cả việc tạo/hủy nội bộ các instance đang hoạt động/không hoạt động.
     /// </summary>
     public class Pool : MonoBehaviour
     {
         /// <summary>
-        /// Prefab to instantiate for pooling.
+        /// Prefab để khởi tạo cho việc pooling.
         /// </summary>
         public GameObject prefab;
 
         /// <summary>
-        /// Amount of instances to create at game start.
+        /// Số lượng instance cần tạo khi bắt đầu trò chơi.
         /// </summary>
         public int preLoad = 0;
 
         /// <summary>
-        /// Whether the creation of new instances should be limited at runtime.
+        /// Liệu việc tạo các instance mới có nên bị giới hạn trong thời gian chạy hay không.
         /// </summary>
         public bool limit = false;
 
         /// <summary>
-        /// Maximum amount of instances created, if limit is enabled.
+        /// Số lượng instance tối đa được tạo, nếu tính năng giới hạn được bật.
         /// </summary>
         public int maxCount;
 
         /// <summary>
-        /// List of active prefab instances for this pool.
+        /// Danh sách các prefab instance đang hoạt động cho pool này.
         /// </summary>  
         [HideInInspector]
         public List<GameObject> active = new List<GameObject>();
 
         /// <summary>
-        /// List of inactive prefab instances for this pool.
+        /// Danh sách các prefab instance không hoạt động cho pool này.
         /// </summary>
         [HideInInspector]
         public List<GameObject> inactive = new List<GameObject>();
 
 
         /// <summary>
-        /// Initialization called by PoolManager on runtime created pools.
+        /// Khởi tạo được gọi bởi PoolManager trên các pool được tạo trong thời gian chạy.
         /// </summary>
         public void Awake()
         {
-            //can't initialize without prefab
+            //không thể khởi tạo nếu không có prefab
             if (prefab == null) return;
 
-            //add this pool to the PoolManager dictionary
+            //thêm pool này vào từ điển của PoolManager
             PoolManager.Add(this);
 
             PreLoad();
@@ -64,190 +64,190 @@ namespace TanksMP
 
 
         /// <summary>
-        /// Loads specified amount of objects before playtime.
+        /// Tải một lượng đối tượng nhất định trước khi bắt đầu chơi.
         /// </summary>
         public void PreLoad()
         {
             if (prefab == null)
             {
-                Debug.LogWarning("Prefab in pool empty! No Preload happening. Please check references.");
+                Debug.LogWarning("Prefab trong pool bị trống! Không có Preload nào xảy ra. Vui lòng kiểm tra lại tham chiếu.");
                 return;
             }
 
-            //instantiate defined preload amount but don't exceed the maximum amount of objects
+            //khởi tạo số lượng tải trước đã định nghĩa nhưng không vượt quá số lượng đối tượng tối đa
             for (int i = totalCount; i < preLoad; i++)
             {
-                //instantiate new instance of the prefab
+                //khởi tạo instance mới của prefab
                 GameObject obj = (GameObject)Object.Instantiate(prefab, Vector3.zero, Quaternion.identity);
-                //parent the new instance to this transform
+                //đặt instance mới làm con của transform này
                 obj.transform.SetParent(transform);
 
-                //rename it to an unique heading for easier editor overview
+                //đổi tên nó thành một tiêu đề duy nhất để dễ quản lý hơn trong editor
                 Rename(obj.transform);
-                //deactivate object including child objects
+                //vô hiệu hóa đối tượng bao gồm cả các đối tượng con
                 obj.SetActive(false);
-                //add object to the list of inactive instances
+                //thêm đối tượng vào danh sách các instance không hoạt động
                 inactive.Add(obj);
             }
         }
 
 
         /// <summary>
-        /// Activates (or instantiates) a new instance for this pool.
+        /// Kích hoạt (hoặc khởi tạo) một instance mới cho pool này.
         /// </summary>
         public GameObject Spawn(Vector3 position, Quaternion rotation)
         {
-            //init variables
+            //khởi tạo các biến
             GameObject obj;
             Transform trans;
 
-            //there are inactive objects available for activation
+            //có các đối tượng không hoạt động sẵn sàng để kích hoạt
             if (inactive.Count > 0)
             {
-                //get first inactive object in the list
+                //lấy đối tượng không hoạt động đầu tiên trong danh sách
                 obj = inactive[0];
-                //we want to activate it, remove it from the inactive list
+                //chúng ta muốn kích hoạt nó, xóa nó khỏi danh sách không hoạt động
                 inactive.RemoveAt(0);
 
-                //get instance transform
+                //lấy transform của instance
                 trans = obj.transform;
             }
             else
             {
-                //we don't have any inactive objects available,
-                //we have to instantiate a new one
-                //check if the limited count allows new instantiations
-                //if not, return nothing
+                //chúng ta không có bất kỳ đối tượng không hoạt động nào sẵn dùng,
+                //chúng ta phải khởi tạo một cái mới
+                //kiểm tra xem số lượng giới hạn có cho phép khởi tạo mới hay không
+                //nếu không, không trả về gì cả
                 if (limit && active.Count >= maxCount)
                     return null;
 
-                //instantiation possible, instantiate new instance of the prefab
+                //có thể khởi tạo, khởi tạo instance mới của prefab
                 obj = (GameObject)Object.Instantiate(prefab);
-                //get instance transform
+                //lấy transform của instance
                 trans = obj.transform;
-                //rename it to an unique heading for easier editor overview
+                //đổi tên nó thành một tiêu đề duy nhất để dễ quản lý hơn trong editor
                 Rename(trans);
             }
 
-            //set position and rotation passed in
+            //thiết lập vị trí và vòng xoay được truyền vào
             trans.position = position;
             trans.rotation = rotation;
-            //in case it wasn't parented to this transform, reparent it now
+            //trong trường hợp nó không phải là con của transform này, hãy đặt nó làm con ngay bây giờ
             if (trans.parent != transform)
                 trans.parent = transform;
 
-            //add object to the list of active instances
+            //thêm đối tượng vào danh sách các instance đang hoạt động
             active.Add(obj);
-            //activate object including child objects
+            //kích hoạt đối tượng bao gồm cả các đối tượng con
             obj.SetActive(true);
-            //call the method OnSpawn() on every component and children of this object
+            //gọi phương thức OnSpawn() trên mọi thành phần và đối tượng con của đối tượng này
             obj.BroadcastMessage("OnSpawn", SendMessageOptions.DontRequireReceiver);
 
-            //submit instance
+            //gửi đi instance
             return obj;
         }
 
 
         /// <summary>
-        /// Deactivates an instance of this pool for later use.
+        /// Vô hiệu hóa một instance của pool này để sử dụng sau.
         /// </summary>
         public void Despawn(GameObject instance)
         {
-            //search in active instances for this instance
+            //tìm kiếm instance này trong các instance đang hoạt động
             if (!active.Contains(instance))
             {
-                Debug.LogWarning("Can't despawn - Instance not found: " + instance.name + " in Pool " + this.name);
+                Debug.LogWarning("Không thể despawn - Không tìm thấy instance: " + instance.name + " trong Pool " + this.name);
                 return;
             }
 
-            //in case it was unparented during runtime, reparent it now
+            //trong trường hợp nó đã bị tách ra khỏi cha trong thời gian chạy, hãy đặt lại cha ngay bây giờ
             if (instance.transform.parent != transform)
                 instance.transform.parent = transform;
 
-            //we want to deactivate it, remove it from the active list
+            //chúng ta muốn vô hiệu hóa nó, xóa nó khỏi danh sách hoạt động
             active.Remove(instance);
-            //add object to the list of inactive instances instead
+            //thêm đối tượng vào danh sách các instance không hoạt động thay thế
             inactive.Add(instance);
-            //call the method OnDespawn() on every component and children of this object
+            //gọi phương thức OnDespawn() trên mọi thành phần và đối tượng con của đối tượng này
             instance.BroadcastMessage("OnDespawn", SendMessageOptions.DontRequireReceiver);
-            //deactivate object including child objects
+            //vô hiệu hóa đối tượng bao gồm cả các đối tượng con
             instance.SetActive(false);
         }
 
 
         /// <summary>
-        /// Timed deactivation of an instance of this pool for later use.
+        /// Vô hiệu hóa có thời gian một instance của pool này để sử dụng sau.
         /// </summary>
         public void Despawn(GameObject instance, float time)
         {
-            //create new class PoolTimeObject to keep track of the instance
+            //tạo lớp PoolTimeObject mới để theo dõi instance
             PoolTimeObject timeObject = new PoolTimeObject();
-            //assign time and instance variable of this class
+            //gán biến thời gian và instance của lớp này
             timeObject.instance = instance;
             timeObject.time = time;
 
-            //start timed deactivation using the created properties
+            //bắt đầu vô hiệu hóa có thời gian bằng cách sử dụng các thuộc tính đã tạo
             StartCoroutine(DespawnInTime(timeObject));
         }
 
 
-        //coroutine which waits for 'time' seconds before deactivating the instance
+        //coroutine đợi 'time' giây trước khi vô hiệu hóa instance
         IEnumerator DespawnInTime(PoolTimeObject timeObject)
         {
-            //cache instance to deactivate
+            //lưu tạm instance cần vô hiệu hóa
             GameObject instance = timeObject.instance;
 
-            //wait for defined seconds
+            //đợi số giây đã định nghĩa
             float timer = Time.time + timeObject.time;
             while (instance.activeInHierarchy && Time.time < timer)
                 yield return null;
 
-            //the instance got deactivated in between already
+            //instance đã bị vô hiệu hóa trong lúc chờ rồi
             if (!instance.activeInHierarchy) yield break;
-            //despawn it now
+            //hủy nó ngay bây giờ (despawn)
             Despawn(instance);
         }
 
 
         /// <summary>
-        /// Destroys all inactive instances of this pool (garbage collector heavy). The
-        /// parameter determines if only instances above the preLoad value should be destroyed.
+        /// Hủy tất cả các instance không hoạt động của pool này (nặng đối với bộ thu gom rác - garbage collector).
+        /// Tham số xác định xem chỉ các instance vượt quá giá trị preLoad mới nên bị hủy.
         /// </summary>
         public void DestroyUnused(bool limitToPreLoad)
         {
-            //only destroy instances above the limit amount
+            //chỉ hủy các instance vượt quá lượng giới hạn
             if (limitToPreLoad)
             {
-                //start from the last inactive instance and count down
-                //until the index reached the limit amount
+                //bắt đầu từ instance không hoạt động cuối cùng và đếm ngược
+                //cho đến khi chỉ số đạt đến lượng giới hạn
                 for (int i = inactive.Count - 1; i >= preLoad; i--)
                 {
-                    //destroy the object at 'i'
+                    //hủy đối tượng tại 'i'
                     Object.Destroy(inactive[i]);
                 }
-                //remove the range of destroyed objects (now null references) from the list
+                //xóa phạm vi các đối tượng đã bị hủy (bây giờ là null) khỏi danh sách
                 if (inactive.Count > preLoad)
                     inactive.RemoveRange(preLoad, inactive.Count - preLoad);
             }
             else
             {
-                //limitToPreLoad is false, destroy all inactive instances
+                //limitToPreLoad là false, hủy tất cả các instance không hoạt động
                 for (int i = 0; i < inactive.Count; i++)
                 {
                     Object.Destroy(inactive[i]);
                 }
-                //reset the list
+                //đặt lại danh sách
                 inactive.Clear();
             }
         }
 
 
         /// <summary>
-        /// Destroys a specific amount of inactive instances (garbage collector heavy).
+        /// Hủy một số lượng cụ thể các instance không hoạt động (nặng đối với bộ thu gom rác).
         /// </summary>
         public void DestroyCount(int count)
         {
-            //the amount which was passed in exceeds the amount of inactive instances
+            //số lượng được truyền vào vượt quá số lượng instance không hoạt động
             if (count > inactive.Count)
             {
                 Debug.LogWarning("Destroy Count value: " + count + " is greater than inactive Count: " +
@@ -257,47 +257,47 @@ namespace TanksMP
                 return;
             }
 
-            //starting from the end, count down the index and destroy each inactive instance
-            //until we destroyed the amount passed in
+            //bắt đầu từ cuối, đếm ngược chỉ số và hủy từng instance không hoạt động
+            //cho đến khi chúng ta đã hủy đủ số lượng được truyền vào
             for (int i = inactive.Count - 1; i >= inactive.Count - count; i--)
             {
                 Object.Destroy(inactive[i]);
             }
-            //remove the range of destroyed objects (now null references) from the list
+            //xóa phạm vi các đối tượng đã bị hủy (bây giờ là null) khỏi danh sách
             inactive.RemoveRange(inactive.Count - count, count);
         }
 
 
-        //create an unique name for each instance at instantiation
-        //to differ them from each other in the editor
+        //tạo một cái tên duy nhất cho mỗi instance khi khởi tạo
+        //để phân biệt chúng với nhau trong editor
         private void Rename(Transform instance)
         {
-            //count total instances and assign the next free number
-            //convert it in the range of hundreds:
-            //there shouldn't be thousands of instances at any time
-            //e.g. TestEnemy(Clone)001
+            //đếm tổng số instance và gán số tự do tiếp theo
+            //chuyển đổi nó trong phạm vi hàng trăm:
+            //không nên có hàng nghìn instance cùng một lúc
+            //vị dụ: TestEnemy(Clone)001
             instance.name += (totalCount + 1).ToString("#000");
         }
 
 
-        //count all instances of this pool option
+        //đếm tất cả các instance của tùy chọn pool này
         private int totalCount
         {
             get
             {
-                //initialize count value
+                //khởi tạo giá trị đếm
                 int count = 0;
-                //add active and inactive count
+                //cộng số lượng đang hoạt động và không hoạt động
                 count += active.Count;
                 count += inactive.Count;
-                //return final count
+                //trả về kết quả đếm cuối cùng
                 return count;
             }
         }
 
 
-        //when this pool gets destroyed,
-        //clear instances lists
+        //khi pool này bị hủy,
+        //xóa sạch danh sách các instance
         void OnDestroy()
         {
             active.Clear();
@@ -307,18 +307,18 @@ namespace TanksMP
 
 
     /// <summary>
-    /// Stores properties used on timed deactivation of instances.
+    /// Lưu trữ các thuộc tính được sử dụng khi vô hiệu hóa có thời gian các instance.
     /// </summary>
     [System.Serializable]
     public class PoolTimeObject
     {
         /// <summary>
-        /// Instance to deactivate.
+        /// Instance cần vô hiệu hóa.
         /// </summary>
         public GameObject instance;
 
         /// <summary>
-        /// Delay until deactivation.
+        /// Độ trễ cho đến khi vô hiệu hóa.
         /// </summary>
         public float time;
     }

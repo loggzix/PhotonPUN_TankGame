@@ -1,97 +1,97 @@
-﻿/*  This file is part of the "Tanks Multiplayer" project by FLOBUK.
- *  You are only allowed to use these resources if you've bought them from the Unity Asset Store.
- * 	You shall not license, sublicense, sell, resell, transfer, assign, distribute or
- * 	otherwise make available to any third party the Service or the Content. */
+/*  File này là một phần của dự án "Tanks Multiplayer" của FLOBUK.
+ *  Bạn chỉ được phép sử dụng các tài nguyên này nếu bạn đã mua chúng từ Unity Asset Store.
+ * 	Bạn không được cấp phép, cấp phép con, bán, bán lại, chuyển nhượng, chỉ định, phân phối hoặc
+ * 	cung cấp Dịch vụ hoặc Nội dung cho bất kỳ bên thứ ba nào. */
 
 using UnityEngine;
 
 namespace TanksMP
 {
     /// <summary>
-    /// Camera script for following the player or a different target transform.
-    /// Extended with ability to hide certain layers (e.g. UI) while in "follow mode".
+    /// Script của Camera để theo dõi người chơi hoặc một mục tiêu transform khác.
+    /// Mở rộng với khả năng ẩn một số layer nhất định (ví dụ: UI) khi ở "chế độ theo dõi".
     /// </summary>
     public class FollowTarget : MonoBehaviour
     {
         /// <summary>
-        /// The camera target to follow.
-        /// Automatically picked up in LateUpdate().
+        /// Mục tiêu camera cần theo dõi.
+        /// Tự động lấy được trong LateUpdate().
         /// </summary>
         public Transform target;
         
         /// <summary>
-        /// Layers to hide after calling HideMask().
+        /// Các layer cần ẩn sau khi gọi HideMask().
         /// </summary>
         public LayerMask respawnMask;
 
         /// <summary>
-        /// The clamped distance in the x-z plane to the target.
+        /// Khoảng cách giới hạn trong mặt phẳng x-z tới mục tiêu.
         /// </summary>
         public float distance = 10.0f;
         
         /// <summary>
-        /// The clamped height the camera should be above the target.
+        /// Chiều cao giới hạn mà camera nên ở phía trên mục tiêu.
         /// </summary>
         public float height = 5.0f;
 
         /// <summary>
-        /// Reference to the Camera component.
+        /// Tham chiếu đến thành phần Camera.
         /// </summary>
         [HideInInspector]
         public Camera cam;
         
         /// <summary>
-        /// Reference to the camera Transform.
+        /// Tham chiếu đến Transform của camera.
         /// </summary>
         [HideInInspector]
         public Transform camTransform;
         
         
-        //initialize variables
+        //khởi tạo các biến
         void Start()
         {
             cam = GetComponent<Camera>();
             camTransform = transform;
 
-            //the AudioListener for this scene is not attached directly to this camera,
-            //but to a separate gameobject parented to the camera. This is because the
-            //camera is usually positioned above the player, however the AudioListener
-            //should consider audio clips from the position of the player in 3D space.
-            //so here we position the AudioListener child object at the target position.
-            //Remark: parenting the AudioListener to the player doesn't work, because
-            //it gets disabled on death and therefore stops playing sounds completely
+            //AudioListener cho scene này không được gắn trực tiếp vào camera này,
+            //mà gắn vào một gameobject riêng biệt làm con của camera. Điều này là do
+            //camera thường được đặt phía trên người chơi, tuy nhiên AudioListener
+            //nên xem xét các clip âm thanh từ vị trí của người chơi trong không gian 3D.
+            //vì vậy ở đây chúng ta đặt đối tượng con AudioListener tại vị trí mục tiêu.
+            //Lưu ý: đặt AudioListener làm con của người chơi không hiệu quả, vì
+            //nó bị vô hiệu hóa khi chết và do đó ngừng phát âm thanh hoàn toàn
             Transform listener = GetComponentInChildren<AudioListener>().transform;
             listener.position = transform.position + transform.forward * distance;
         }
 
 
-        //position the camera in every frame
+        //đặt vị trí camera trong mỗi frame
         void LateUpdate()
         {
-            //cancel if we don't have a target
+            //hủy nếu không có mục tiêu
             if (!target)
                 return;
 
-            //convert the camera's transform angle into a rotation
+            //chuyển đổi góc transform của camera thành một vòng xoay
             Quaternion currentRotation = Quaternion.Euler(0, transform.eulerAngles.y, 0);
 
-            //set the position of the camera on the x-z plane to:
-            //distance units behind the target, height units above the target
+            //đặt vị trí của camera trên mặt phẳng x-z tại:
+            //các đơn vị khoảng cách phía sau mục tiêu, các đơn vị chiều cao phía trên mục tiêu
             Vector3 pos = target.position;
             pos -= currentRotation * Vector3.forward * Mathf.Abs(distance);
             pos.y = target.position.y + Mathf.Abs(height);
             transform.position = pos;
 
-            //look at the target
+            //nhìn vào mục tiêu
             transform.LookAt(target);
 
-            //clamp distance
+            //giới hạn khoảng cách
             transform.position = target.position - (transform.forward * Mathf.Abs(distance));
         }
         
         
         /// <summary>
-        /// Culls the specified layers of 'respawnMask' by the camera.
+        /// Loại bỏ các layer được chỉ định của 'respawnMask' khỏi camera.
         /// </summary>
         public void HideMask(bool shouldHide)
         {

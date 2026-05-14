@@ -1,7 +1,7 @@
-﻿/*  This file is part of the "Tanks Multiplayer" project by FLOBUK.
- *  You are only allowed to use these resources if you've bought them from the Unity Asset Store.
- * 	You shall not license, sublicense, sell, resell, transfer, assign, distribute or
- * 	otherwise make available to any third party the Service or the Content. */
+/*  File này là một phần của dự án "Tanks Multiplayer" của FLOBUK.
+ *  Bạn chỉ được phép sử dụng các tài nguyên này nếu bạn đã mua chúng từ Unity Asset Store.
+ * 	Bạn không được cấp phép, cấp phép con, bán, bán lại, chuyển nhượng, chỉ định, phân phối hoặc
+ * 	cung cấp Dịch vụ hoặc Nội dung cho bất kỳ bên thứ ba nào. */
 
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -9,27 +9,27 @@ using UnityEngine.SceneManagement;
 namespace TanksMP
 {
     /// <summary>
-    /// This script is attached to a runtime-generated gameobject in the game scene,
-    /// taken over to the intro scene to directly request starting a new multiplayer game.
+    /// Script này được gắn vào một gameobject được tạo trong lúc chạy trong game scene,
+    /// được mang sang intro scene để yêu cầu bắt đầu ngay một trò chơi multiplayer mới.
     /// </summary>
     public class UIRestartButton : MonoBehaviour 
     {
-        //listen to scene changes
+        //lắng nghe các thay đổi scene
         void Awake()
         {
             SceneManager.sceneLoaded += OnSceneLoaded;
         }
         
         
-        //give the scene some time to initialize
+        //cho scene một chút thời gian để khởi tạo
         void OnSceneLoaded(Scene scene, LoadSceneMode mode)
         {
             Invoke("EnterPlay", 0.5f);
         }
         
         
-        //call the play button instantly on scene load
-        //destroy itself after use
+        //gọi nút play ngay lập tức khi load scene
+        //tự hủy sau khi sử dụng
         void EnterPlay()
         {
             FindAnyObjectByType<UIMain>().Play();

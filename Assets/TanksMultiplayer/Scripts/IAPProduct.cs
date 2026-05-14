@@ -1,7 +1,7 @@
-/*  This file is part of the "Tanks Multiplayer" project by FLOBUK.
- *  You are only allowed to use these resources if you've bought them from the Unity Asset Store.
- * 	You shall not license, sublicense, sell, resell, transfer, assign, distribute or
- * 	otherwise make available to any third party the Service or the Content. */
+/*  File này là một phần của dự án "Tanks Multiplayer" của FLOBUK.
+ *  Bạn chỉ được phép sử dụng các tài nguyên này nếu bạn đã mua chúng từ Unity Asset Store.
+ * 	Bạn không được cấp phép, cấp phép con, bán, bán lại, chuyển nhượng, chỉ định, phân phối hoặc
+ * 	cung cấp Dịch vụ hoặc Nội dung cho bất kỳ bên thứ ba nào. */
 
 using UnityEngine;
 using UnityEngine.UI;
@@ -12,76 +12,77 @@ using UnityEngine.Purchasing;
 namespace TanksMP
 {
     /// <summary>
-    /// Describes an in-app purchase product that can be bought by using Unity IAP.
-    /// Contains several UI elements and logic for selecting/deselecting.
+    /// Mô tả một sản phẩm mua trong ứng dụng có thể mua bằng Unity IAP.
+    /// Chứa một số phần tử UI và logic để chọn/bỏ chọn.
     /// </summary>
     public class IAPProduct : MonoBehaviour
     {
 		/// <summary>
-		/// Whether this product should be registered with Unity IAP.
-        /// This should only be set to true if the product exists on an App Store.
+		/// Liệu sản phẩm này có nên được đăng ký với Unity IAP hay không.
+        /// Cái này chỉ nên được đặt thành true nếu sản phẩm tồn tại trên App Store.
 		/// </summary>
 		public bool buyable = true;
 
         /// <summary>
-        /// The unique identifier for this product.
-        /// For live products, this should match the id on the App Store.
+        /// Định danh duy nhất cho sản phẩm này.
+        /// Đối với các sản phẩm đang hoạt động, định danh này nên khớp với id trên App Store.
         /// </summary>
         public string id;
 
 		/// <summary>
-		/// Unique value saved for selectable products to identify the current selection.
+		/// Giá trị duy nhất được lưu cho các sản phẩm có thể chọn để xác định lựa chọn hiện tại.
 		/// </summary>
 		public int value;
 
         #if UNITY_IAP
         /// <summary>
-        /// In-app purchase type that should match the product type on the App Store.
+        /// Loại mua trong ứng dụng nên khớp với loại sản phẩm trên App Store.
         /// </summary>
         public ProductType type = ProductType.NonConsumable;
         #endif
 
         /// <summary>
-        /// UI button that triggers the purchase workflow via Unity IAP.
+        /// Nút UI kích hoạt quy trình mua hàng qua Unity IAP.
         /// </summary>
         public GameObject buyButton;
 
         /// <summary>
-        /// Optional elements which get enabled if this product has been sold.
+        /// Các thành phần tùy chọn sẽ được bật nếu sản phẩm này đã được bán.
         /// </summary>
         public GameObject sold;
 
         /// <summary>
-        /// UI button that triggers the selection of this product in the shop.
-        /// If a group has been assigned to its Toggle, other products are deselected.
+        /// Nút UI kích hoạt việc chọn sản phẩm này trong cửa hàng.
+        /// Nếu một group đã được gán cho Toggle của nó, các sản phẩm khác sẽ bị bỏ chọn.
         /// </summary>
         public GameObject selectButton;
 
         /// <summary>
-        /// Optional elements which get enabled if this product has been selected.
+        /// Các thành phần tùy chọn sẽ được bật nếu sản phẩm này đã được chọn.
         /// </summary>
         public GameObject selected;
 
 
-        //sets the initial purchase/selection state
+        //thiết lập trạng thái mua/chọn ban đầu
         void Awake()
         {
-            //this product has been purchased already
+            //sản phẩm này đã được mua rồi
             if (PlayerPrefs.HasKey(Encryptor.Encrypt(id)))
                 Purchased();
             else if (!buyable)
             {
-                //the product has not been bought yet, but it is not marked as buyable
-                //on the App Store either. Meaning we hide the buy button and show the
-                //select button for it directly instead.
+                //sản phẩm chưa được mua, nhưng nó cũng không được đánh dấu là có thể mua
+                //trên App Store. Nghĩa là chúng ta ẩn nút mua và hiển thị trực tiếp
+                //nút chọn cho nó thay thế.
                 buyButton.SetActive(false);
                 selectButton.SetActive(true);
             }
         }
 
 
-        //validates the value saved on the device against the value of this product: if they match,
-        //this means that we previously selected this product and reinitialize it as selected again
+        //xác thực giá trị đã lưu trên thiết bị với giá trị của sản phẩm này: nếu chúng khớp nhau,
+        //điều này có nghĩa là trước đó chúng ta đã chọn sản phẩm này và khởi tạo lại nó là đã chọn
+        //một lần nữa
         void Start()
         {
             if (Encryptor.Decrypt(PlayerPrefs.GetString(PrefsKeys.activeTank)) == value.ToString())
@@ -90,7 +91,7 @@ namespace TanksMP
 
 
         /// <summary>
-        /// Tries to open the purchase dialog this product via Unity IAP.
+        /// Thử mở hộp thoại mua sản phẩm này qua Unity IAP.
         /// </summary>
         public void Purchase()
         {
@@ -102,8 +103,8 @@ namespace TanksMP
 
 
         /// <summary>
-        /// Sets this product UI state to 'purchased', hiding the buy button
-        /// and showing the 'sold' gameobject, if specified.
+        /// Thiết lập trạng thái UI của sản phẩm này thành 'đã mua', ẩn nút mua
+        /// và hiển thị gameobject 'sold' nếu được chỉ định.
         /// </summary>
         public void Purchased()
         {
@@ -113,33 +114,33 @@ namespace TanksMP
 
 
         /// <summary>
-        /// For already bought products: sets this product UI state to 'selected' and saves the
-        /// current selection value on the device. If a product gets selected, this method is
-        /// called for all other products in the same group too, with the boolean being false.
-        /// Thus both the logic for selection and deselection is handled within this method.
-        /// Invoked by the onValueChanged event on the select button inspector.
+        /// Đối với các sản phẩm đã mua: thiết lập trạng thái UI của sản phẩm thành 'đã chọn' và lưu
+        /// giá trị lựa chọn hiện tại trên thiết bị. Nếu một sản phẩm được chọn, phương thức này cũng
+        /// được gọi cho tất cả các sản phẩm khác trong cùng một nhóm với giá trị boolean là false.
+        /// Do đó, cả logic cho việc chọn và bỏ chọn đều được xử lý trong phương thức này.
+        /// Được gọi bởi sự kiện onValueChanged trong inspector của nút chọn.
         /// </summary>
         public void IsSelected(bool thisSelect)
         {
-            //we need to buy this product first
+            //chúng ta cần mua sản phẩm này trước
             if (buyButton.activeInHierarchy)
                 return;
 
-            //if this object has been selected
+            //nếu đối tượng này đã được chọn
             if (thisSelect)
             {  
-                //get a reference to the Toggle component on the select button
+                //lấy tham chiếu đến thành phần Toggle trên nút chọn
                 Toggle toggle = selectButton.GetComponent<Toggle>();
 
-                //in case this product is part of a group of items
+                //trong trường hợp sản phẩm này là một phần của một nhóm vật phẩm
                 if (toggle.group)
                 {
-                    //because Toggle components on deactivated gameobjects do not receive onValueChanged events,
-                    //here we implement a hacky way to deselect all other Toggles, even deactivated ones
+                    //vì các thành phần Toggle trên các gameobject bị vô hiệu hóa không nhận được sự kiện onValueChanged,
+                    //ở đây chúng ta triển khai một cách "hacky" để bỏ chọn tất cả các Toggle khác, ngay cả những cái đã bị vô hiệu hóa
                     IAPProduct[] others = toggle.group.GetComponentsInChildren<IAPProduct>(true);
                     for (int i = 0; i < others.Length; i++)
                     {
-                        //unselect the iterated product if it is not the selected product.
+                        //bỏ chọn sản phẩm được lặp qua nếu nó không phải là sản phẩm được chọn.
                         if (others[i].selectButton != null && others[i] != this)
                         {
                             others[i].IsSelected(false);
@@ -147,18 +148,18 @@ namespace TanksMP
                     }
                 }
 
-                //display that this product is selected
+                //hiển thị rằng sản phẩm này đã được chọn
                 toggle.isOn = true;
                 selectButton.SetActive(false);
                 if (selected) selected.SetActive(true);
 
-                //save the selection value to the device
+                //lưu giá trị lựa chọn vào thiết bị
 				PlayerPrefs.SetString(PrefsKeys.activeTank, Encryptor.Encrypt(value.ToString()));
             }
             else
             {
-                //if another object has been selected, show the select button
-                //for this product and unset the 'selected' state
+                //nếu một đối tượng khác đã được chọn, hiển thị nút chọn
+                //cho sản phẩm này và bỏ trạng thái 'đã chọn'
                 if (selectButton) selectButton.SetActive(true);
                 if (selected) selected.SetActive(false);
             }

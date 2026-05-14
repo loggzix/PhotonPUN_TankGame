@@ -1,7 +1,7 @@
-/*  This file is part of the "Tanks Multiplayer" project by FLOBUK.
- *  You are only allowed to use these resources if you've bought them from the Unity Asset Store.
- * 	You shall not license, sublicense, sell, resell, transfer, assign, distribute or
- * 	otherwise make available to any third party the Service or the Content. */
+/*  File này là một phần của dự án "Tanks Multiplayer" của FLOBUK.
+ *  Bạn chỉ được phép sử dụng các tài nguyên này nếu bạn đã mua chúng từ Unity Asset Store.
+ * 	Bạn không được cấp phép, cấp phép con, bán, bán lại, chuyển nhượng, chỉ định, phân phối hoặc
+ * 	cung cấp Dịch vụ hoặc Nội dung cho bất kỳ bên thứ ba nào. */
 
 using System;
 using System.Collections;
@@ -15,42 +15,42 @@ using Hashtable = ExitGames.Client.Photon.Hashtable;
 namespace TanksMP
 {
     /// <summary>
-    /// Custom implementation of the most Photon callback handlers for network workflows. This script is
-    /// responsible for connecting to Photon's Cloud, spawning players and handling disconnects.
+    /// Triển khai tùy chỉnh cho hầu hết các trình xử lý callback của Photon cho luồng công việc mạng. Script này
+    /// chịu trách nhiệm kết nối với Cloud của Photon, tạo người chơi và xử lý ngắt kết nối.
     /// </summary>
 	public class NetworkManagerCustom : MonoBehaviourPunCallbacks
     {
-        //reference to this script instance
+        //tham chiếu đến instance của script này
         private static NetworkManagerCustom instance;
 
         /// <summary>
-        /// Scene index that gets loaded when disconnecting from a game.
+        /// Chỉ số scene được tải khi ngắt kết nối khỏi trò chơi.
         /// </summary>
         public int offlineSceneIndex = 0;
 
         /// <summary>
-        /// Scene index that gets loaded after a connection has been established.
-        /// Will get overridden by random matching scene, when using GameMode filtering.
+        /// Chỉ số scene được tải sau khi kết nối đã được thiết lập.
+        /// Sẽ bị ghi đè bởi scene ghép trận ngẫu nhiên khi sử dụng bộ lọc GameMode.
         /// </summary>
         public int onlineSceneIndex = 1;
 
         /// <summary>
-        /// Maximum amount of players per room.
+        /// Số lượng người chơi tối đa trong một phòng.
         /// </summary>
         public int maxPlayers = 12;
 
         /// <summary>
-        /// References to the available player prefabs located in a Resources folder.
+        /// Tham chiếu đến các prefab người chơi có sẵn nằm trong thư mục Resources.
         /// </summary>
         public GameObject[] playerPrefabs;
 
         /// <summary>
-        /// Event fired when a connection to the matchmaker service failed.
+        /// Sự kiện được kích hoạt khi kết nối với dịch vụ matchmaker thất bại.
         /// </summary>
         public static event Action connectionFailedEvent;
 
 
-        //initialize network view
+        //khởi tạo network view
         void Awake()
         {
             if (instance == null)
@@ -64,15 +64,15 @@ namespace TanksMP
                 return;
             }
 
-            //adding a view to this gameobject with a unique viewID
-            //this is to avoid having the same ID in a scene
+            //thêm một view vào gameobject này với một viewID duy nhất
+            //điều này để tránh việc có cùng một ID trong một scene
             PhotonView view = gameObject.AddComponent<PhotonView>();
             view.ViewID = 999;
         }
 
 
         /// <summary>
-        /// Returns a reference to this script instance.
+        /// Trả về tham chiếu đến instance của script này.
         /// </summary>
         public static NetworkManagerCustom GetInstance()
         {
@@ -81,8 +81,8 @@ namespace TanksMP
 
 
         /// <summary>
-        /// Starts initializing and connecting to a game. Depends on the selected network mode.
-        /// Sets the current player name prior to connecting to the servers.
+        /// Bắt đầu khởi tạo và kết nối với trò chơi. Tùy thuộc vào chế độ mạng đã chọn.
+        /// Thiết lập tên người chơi hiện tại trước khi kết nối với máy chủ.
         /// </summary>
         public static void StartMatch(NetworkMode mode)
         {
@@ -91,17 +91,17 @@ namespace TanksMP
 
             switch (mode)
             {
-                //connects to a cloud game available on the Photon servers
+                //kết nối với một cloud game có sẵn trên máy chủ Photon
                 case NetworkMode.Online:
                     PhotonNetwork.ConnectUsingSettings();
                     break;
 
-                //search for open LAN games on the current network, otherwise open a new one
+                //tìm kiếm các trò chơi LAN đang mở trên mạng hiện tại, nếu không có hãy mở một trò chơi mới
                 case NetworkMode.LAN:
                     PhotonNetwork.ConnectToMaster(PlayerPrefs.GetString(PrefsKeys.serverAddress), 5055, PhotonNetwork.PhotonServerSettings.AppSettings.AppIdRealtime);
                     break;
 
-                //enable Photon offline mode to not send any network messages at all
+                //bật chế độ offline của Photon để không gửi bất kỳ thông điệp mạng nào cả
                 case NetworkMode.Offline:
                     PhotonNetwork.OfflineMode = true;
                     break;
@@ -110,56 +110,56 @@ namespace TanksMP
 
 
         /// <summary>
-        /// Called if a connect call to the Photon server failed before or after the connection was established.
-        /// See the official Photon docs for more details.
+        /// Được gọi nếu lệnh gọi kết nối tới máy chủ Photon thất bại trước hoặc sau khi kết nối được thiết lập.
+        /// Xem tài liệu chính thức của Photon để biết thêm chi tiết.
         /// </summary>
         public override void OnDisconnected(DisconnectCause cause)
         {
             if (connectionFailedEvent != null)
                 connectionFailedEvent();
 
-            //do not switch scenes automatically when the game over screen is being shown already
+            //không chuyển đổi scene tự động khi màn hình kết thúc trò chơi đang được hiển thị
             if (GameManager.GetInstance() != null && GameManager.GetInstance().ui.gameOverMenu.activeInHierarchy)
                 return;
 
-            //switch from the online to the offline scene after connection is closed
+            //chuyển từ scene online sang scene offline sau khi kết nối được đóng
             if (SceneManager.GetActiveScene().buildIndex != offlineSceneIndex)
                 SceneManager.LoadScene(offlineSceneIndex);
         }
 
 
         /// <summary>
-        /// Called after the connection to the master is established.
-        /// See the official Photon docs for more details.
+        /// Được gọi sau khi kết nối với master được thiết lập.
+        /// Xem tài liệu chính thức của Photon để biết thêm chi tiết.
         /// </summary>
         public override void OnConnectedToMaster()
         {
-            //set my own name and try joining a game
+            //đặt tên của chính mình và thử tham gia một trò chơi
             PhotonNetwork.NickName = PlayerPrefs.GetString(PrefsKeys.playerName);
 
-            //use this to define per-mode matchmaking selections instead of joining random rooms (also see OnPhotonRandomJoinFailed() method)
+            //sử dụng cái này để xác định các lựa chọn ghép trận theo từng chế độ thay vì tham gia các phòng ngẫu nhiên (cũng xem phương thức OnPhotonRandomJoinFailed())
             //https://doc.photonengine.com/en-us/realtime/current/reference/matchmaking-and-lobby#not_so_random_matchmaking
             Hashtable expectedCustomRoomProperties = new Hashtable() { { "mode", (byte)PlayerPrefs.GetInt(PrefsKeys.gameMode) } };
 
-            //for truly random matchmaking you would use this call without properties
+            //đối với việc ghép trận thực sự ngẫu nhiên, bạn sẽ sử dụng lệnh gọi này mà không có thuộc tính
             //PhotonNetwork.JoinRandomRoom();
             PhotonNetwork.JoinRandomRoom(expectedCustomRoomProperties, (byte)this.maxPlayers);
         }
 
 
         /// <summary>
-        /// Called when a joining a random room failed.
-        /// See the official Photon docs for more details.
+        /// Được gọi khi việc tham gia một phòng ngẫu nhiên thất bại.
+        /// Xem tài liệu chính thức của Photon để biết thêm chi tiết.
         /// </summary>
         public override void OnJoinRandomFailed(short returnCode, string message)
         {
-            Debug.Log("Photon did not find any matches on the Master Client we are connected to. Creating our own room...");
+            Debug.Log("Photon không tìm thấy bất kỳ trận đấu nào trên Master Client mà chúng ta đang kết nối. Đang tạo phòng riêng của chúng ta...");
 
-            //joining failed so try to create our own room
+            //tham gia thất bại nên thử tạo phòng riêng của chúng ta
             RoomOptions roomOptions = new RoomOptions();
 
-            //same as in OnCennectedToMaster() method above, here we are setting room properties for matchmaking
-            //comment out for fully random matchmaking
+            //tương tự như trong phương thức OnConnectedToMaster() ở trên, tại đây chúng ta đang thiết lập các thuộc tính phòng để ghép trận
+            //comment lại để ghép trận hoàn toàn ngẫu nhiên
             roomOptions.CustomRoomPropertiesForLobby = new string[] { "mode" };
             roomOptions.CustomRoomProperties = new Hashtable() { { "mode", (byte)PlayerPrefs.GetInt(PrefsKeys.gameMode) } };
 
@@ -171,8 +171,8 @@ namespace TanksMP
 
 
         /// <summary>
-        /// Called when a creating a room failed. 
-        /// See the official Photon docs for more details.
+        /// Được gọi khi việc tạo phòng thất bại.
+        /// Xem tài liệu chính thức của Photon để biết thêm chi tiết.
         /// </summary>
         public override void OnCreateRoomFailed(short returnCode, string message)
         {
@@ -182,18 +182,18 @@ namespace TanksMP
 
 
         /// <summary>
-        /// Called when this client created a room and entered it.
-        /// See the official Photon docs for more details.
+        /// Được gọi khi máy khách này đã tạo một phòng và tham gia vào đó.
+        /// Xem tài liệu chính thức của Photon để biết thêm chi tiết.
         /// </summary>
         public override void OnCreatedRoom()
         {
-            //the initial team size of the game for the server creating a new room.
-            //unfortunately this cannot be set via the GameManager because it does not exist at that point
+            //kích thước đội ban đầu của trò chơi cho máy chủ tạo phòng mới.
+            //rất tiếc cái này không thể được thiết lập thông qua GameManager vì nó chưa tồn tại tại thời điểm đó
             short initialArrayLength;
-            //get the selected game mode out of PlayerPrefs
+            //lấy chế độ trò chơi đã chọn từ PlayerPrefs
             GameMode activeGameMode = ((GameMode)PlayerPrefs.GetInt(PrefsKeys.gameMode));
 
-            //set the initial room array size initialization based on game mode
+            //thiết lập khởi tạo kích thước mảng phòng ban đầu dựa trên chế độ trò chơi
             switch(activeGameMode)
             {
                 case GameMode.CTF:
@@ -204,15 +204,15 @@ namespace TanksMP
                     break;
             }
 
-            //we created a room so we have to set the initial room properties for this room,
-            //such as populating the team fill and score arrays
+            //chúng ta đã tạo một phòng nên chúng ta phải thiết lập các thuộc tính phòng ban đầu cho phòng này,
+            //chẳng hạn như điền vào mảng lấp đầy đội và mảng điểm số
             Hashtable roomProps = new Hashtable();
             roomProps.Add(RoomExtensions.size, new int[initialArrayLength]);
             roomProps.Add(RoomExtensions.score, new int[initialArrayLength]);
             PhotonNetwork.CurrentRoom.SetCustomProperties(roomProps);
 
-            //load the online scene randomly out of all available scenes for the selected game mode
-            //we are checking for a naming convention here, if a scene starts with the game mode abbreviation
+            //tải scene online ngẫu nhiên từ tất cả các scene có sẵn cho chế độ trò chơi đã chọn
+            //chúng ta đang kiểm tra quy ước đặt tên ở đây, nếu một scene bắt đầu bằng chữ viết tắt của chế độ trò chơi
             List<int> matchingScenes = new List<int>();
             for(int i = 0; i < SceneManager.sceneCountInBuildSettings; i++)
             {
@@ -223,38 +223,38 @@ namespace TanksMP
                 }
             }
 			
-			//check that your scene begins with the game mode abbreviation
+			//kiểm tra xem scene của bạn có bắt đầu bằng chữ viết tắt của chế độ trò chơi không
 			if(matchingScenes.Count == 0)
             {
                 Debug.LogWarning("No Scene for selected Game Mode found in Build Settings!");
                 return;
             }
 
-            //get random scene out of available scenes and assign it as the online scene
+            //lấy scene ngẫu nhiên trong số các scene có sẵn và gán nó làm scene online
             onlineSceneIndex = matchingScenes[UnityEngine.Random.Range(0, matchingScenes.Count)];
-            //then load it
+            //sau đó tải nó
             PhotonNetwork.LoadLevel(onlineSceneIndex);
         }
 
 
         /// <summary>
-        /// Called on entering a lobby on the Master Server.
-        /// See the official Photon docs for more details.
+        /// Được gọi khi tham gia sảnh chờ (lobby) trên Master Server.
+        /// Xem tài liệu chính thức của Photon để biết thêm chi tiết.
         /// </summary>
         public override void OnJoinedLobby()
         {
-            //when connecting to the master, try joining a room
+            //khi kết nối với master, hãy thử tham gia một phòng
             PhotonNetwork.JoinRandomRoom();
         }
 
 
         /// <summary>
-        /// Called when entering a room (by creating or joining it).
-        /// See the official Photon docs for more details.
+        /// Được gọi khi tham gia một phòng (bằng cách tạo hoặc tham gia).
+        /// Xem tài liệu chính thức của Photon để biết thêm chi tiết.
         /// </summary>
         public override void OnJoinedRoom()
         {
-            //we've joined a finished room, disconnect immediately
+            //chúng ta đã tham gia một phòng đã kết thúc, hãy ngắt kết nối ngay lập tức
             if (GameManager.GetInstance() != null && GameManager.GetInstance().IsGameOver())
             {
                 PhotonNetwork.Disconnect();
@@ -264,15 +264,15 @@ namespace TanksMP
             if (!PhotonNetwork.IsMasterClient)
                 return;
 
-            //add ourselves to the game. This is only called for the master client
-            //because other clients will trigger the OnPhotonPlayerConnected callback directly
+            //thêm chính mình vào trò chơi. Cái này chỉ được gọi cho máy khách master
+            //vì các máy khách khác sẽ kích hoạt callback OnPhotonPlayerConnected trực tiếp
             StartCoroutine(WaitForSceneChange());
         }
 
 
-        //this wait routine is needed on offline mode for waiting on completed scene change,
-        //because in offline mode Photon does not pause network messages. But it doesn't hurt
-        //leaving this in for all other network modes too
+        //routine chờ này là cần thiết trong chế độ offline để chờ thay đổi scene hoàn tất,
+        //vì trong chế độ offline, Photon không tạm dừng các thông điệp mạng. Nhưng việc
+        //để lại cái này cho tất cả các chế độ mạng khác cũng không gây hại gì
         IEnumerator WaitForSceneChange()
         {
             while (SceneManager.GetActiveScene().buildIndex != onlineSceneIndex)
@@ -280,46 +280,46 @@ namespace TanksMP
                 yield return null;
             }
 
-            //we connected ourselves
+            //chúng ta đã tự kết nối mình
             OnPlayerEnteredRoom(PhotonNetwork.LocalPlayer);
         }
 
 
         /// <summary>
-        /// Called when a remote player entered the room. 
-        /// See the official Photon docs for more details.
+        /// Được gọi khi một người chơi từ xa tham gia phòng.
+        /// Xem tài liệu chính thức của Photon để biết thêm chi tiết.
         /// </summary>
         public override void OnPlayerEnteredRoom(Photon.Realtime.Player player)
         {
-            //only let the master client handle this connection
+            //chỉ để máy khách master xử lý kết nối này
             if (!PhotonNetwork.IsMasterClient)
                 return;
 
-            //get the next team index which the player should belong to
-            //assign it to the player and update player properties
+            //lấy chỉ số đội tiếp theo mà người chơi nên thuộc về
+            //gán nó cho người chơi và cập nhật các thuộc tính người chơi
             int teamIndex = GameManager.GetInstance().GetTeamFill();
             PhotonNetwork.CurrentRoom.AddSize(teamIndex, +1);
             player.SetTeam(teamIndex);
 
-            //also player properties are not cleared when disconnecting and connecting
-            //automatically, so we have to set all existing properties to null
-            //these default values will get overriden by correct data soon
+            //ngoài ra các thuộc tính người chơi không được xóa khi ngắt kết nối và kết nối
+            //tự động, vì vậy chúng ta phải đặt tất cả các thuộc tính hiện có thành null
+            //các giá trị mặc định này sẽ sớm bị ghi đè bởi dữ liệu chính xác
             player.Clear();
 
-            //the master client sends an instruction to this player for adding him to the game
+            //máy khách master gửi một hướng dẫn đến người chơi này để thêm họ vào trò chơi
             this.photonView.RPC("AddPlayer", player);
         }
 
 
-        //received from the master client, for this player, after successfully joining a game
+        //nhận được từ máy khách master, cho người chơi này, sau khi tham gia trò chơi thành công
 		[PunRPC]
 		void AddPlayer()
 		{
-            //get our selected player prefab index
+            //lấy chỉ số prefab người chơi đã chọn của chúng ta
 			int prefabId = int.Parse(Encryptor.Decrypt(PlayerPrefs.GetString(PrefsKeys.activeTank)));
             
-            //get the spawn position where our player prefab should be instantiated at, depending on the team assigned
-            //if we cannot get a position, spawn it in the center of that team area - otherwise use the calculated position
+            //lấy vị trí spawn nơi prefab người chơi của chúng ta nên được khởi tạo, tùy thuộc vào đội được gán
+            //nếu chúng ta không thể lấy được vị trí, hãy tạo nó ở giữa khu vực đội đó - nếu không hãy sử dụng vị trí đã tính toán
 			Transform startPos = GameManager.GetInstance().teams[PhotonNetwork.LocalPlayer.GetTeam()].spawn;
 			if (startPos != null) PhotonNetwork.Instantiate(playerPrefabs[prefabId].name, startPos.position, startPos.rotation, 0);
 			else PhotonNetwork.Instantiate(playerPrefabs[prefabId].name, Vector3.zero, Quaternion.identity, 0);
@@ -327,54 +327,54 @@ namespace TanksMP
 
 
         /// <summary>
-        /// Called when a remote player left the room.
-        /// See the official Photon docs for more details.
+        /// Được gọi khi một người chơi từ xa rời phòng.
+        /// Xem tài liệu chính thức của Photon để biết thêm chi tiết.
         /// </summary>
         public override void OnPlayerLeftRoom(Photon.Realtime.Player player)
         {
-            //only let the master client handle this connection
+            //chỉ để máy khách master xử lý kết nối này
             if (!PhotonNetwork.IsMasterClient)
 				return;
 
-            //get player-controlled game object from disconnected player
+            //lấy game object do người chơi điều khiển từ người chơi đã ngắt kết nối
             GameObject targetPlayer = GetPlayerGameObject(player);
 
-            //process any collectibles assigned to that player
+            //xử lý bất kỳ vật phẩm thu thập nào được gán cho người chơi đó
             if(targetPlayer != null)
             {
                 Collectible[] collectibles = targetPlayer.GetComponentsInChildren<Collectible>(true);
                 for (int i = 0; i < collectibles.Length; i++)
                 {
-                    //let the player drop the Collectible
+                    //để người chơi thả vật phẩm thu thập xuống
                     PhotonNetwork.RemoveRPCs(collectibles[i].spawner.photonView);
                     collectibles[i].spawner.photonView.RPC("Drop", RpcTarget.AllBuffered, targetPlayer.transform.position);
                 }
             }
 
-            //clean up instances after processing leaving player
+            //dọn dẹp các instance sau khi xử lý người chơi rời đi
             PhotonNetwork.DestroyPlayerObjects(player);
-            //decrease the team fill for the team of the leaving player and update room properties
+            //giảm lượng lấp đầy đội cho đội của người chơi rời đi và cập nhật thuộc tính phòng
             PhotonNetwork.CurrentRoom.AddSize(player.GetTeam(), -1);
         }
 
 
         /// <summary>
-        /// Finds the remotely controlled Player game object of a specific player,
-        /// by iterating over all Player components and searching for the matching creator.
+        /// Tìm game object Player được điều khiển từ xa của một người chơi cụ thể,
+        /// bằng cách lặp qua tất cả các thành phần Player và tìm kiếm người tạo phù hợp.
         /// </summary>
         public GameObject GetPlayerGameObject(Photon.Realtime.Player player)
         {
             GameObject[] rootObjs = SceneManager.GetActiveScene().GetRootGameObjects();
             List<Player> playerList = new List<Player>();
 
-            //get all Player components from root objects
+            //lấy tất cả các thành phần Player từ các đối tượng gốc
             for (int i = 0; i < rootObjs.Length; i++)
             {
                 Player p = rootObjs[i].GetComponentInChildren<Player>(true);
                 if (p != null) playerList.Add(p);
             }
 
-            //find the game object where the creator matches this specific player ID
+            //tìm game object nơi người tạo khớp với ID người chơi cụ thể này
             for (int i = 0; i < playerList.Count; i++)
             {
                 if (playerList[i].photonView.CreatorActorNr == player.ActorNumber)
@@ -389,7 +389,7 @@ namespace TanksMP
 
 
     /// <summary>
-    /// Network Mode selection for preferred network type.
+    /// Lựa chọn Chế độ Mạng cho loại mạng ưa thích.
     /// </summary>
     public enum NetworkMode
     {
@@ -400,24 +400,24 @@ namespace TanksMP
 
 
     /// <summary>
-    /// This class extends Photon's Room object by custom properties.
-    /// Provides several methods for setting and getting variables out of them.
+    /// Lớp này mở rộng đối tượng Room của Photon bằng các thuộc tính tùy chỉnh.
+    /// Cung cấp một số phương thức để thiết lập và lấy các biến từ chúng.
     /// </summary>
     public static class RoomExtensions
     {       
         /// <summary>
-        /// The key for accessing team fill per team out of the room properties.
+        /// Khóa để truy cập lượng lấp đầy đội theo từng đội từ các thuộc tính phòng.
         /// </summary>
         public const string size = "size";
         
         /// <summary>
-        /// The key for accessing player scores per team out of the room properties.
+        /// Khóa để truy cập điểm số của người chơi theo từng đội từ các thuộc tính phòng.
         /// </summary>
         public const string score = "score";
         
         
         /// <summary>
-        /// Returns the networked team fill for all teams out of properties.
+        /// Trả về lượng lấp đầy đội được nối mạng cho tất cả các đội từ các thuộc tính.
         /// </summary>
         public static int[] GetSize(this Room room)
         {
@@ -425,8 +425,8 @@ namespace TanksMP
         }
         
         /// <summary>
-        /// Increases the team fill for a team by one when a new player joined the game.
-        /// This is also being used on player disconnect by using a negative value.
+        /// Tăng lượng lấp đầy đội cho một đội thêm một khi có người chơi mới tham gia trò chơi.
+        /// Cái này cũng được sử dụng khi người chơi ngắt kết nối bằng cách sử dụng giá trị âm.
         /// </summary>
         public static int[] AddSize(this Room room, int teamIndex, int value)
         {
@@ -438,7 +438,7 @@ namespace TanksMP
         }
         
         /// <summary>
-        /// Returns the networked team scores for all teams out of properties.
+        /// Trả về điểm số đội được nối mạng cho tất cả các đội từ các thuộc tính.
         /// </summary>
         public static int[] GetScore(this Room room)
         {
@@ -446,7 +446,7 @@ namespace TanksMP
         }
         
         /// <summary>
-        /// Increase the score for a team by one when a new player scored a point for his team.
+        /// Tăng điểm số cho một đội thêm một khi một người chơi mới ghi điểm cho đội của mình.
         /// </summary>
         public static int[] AddScore(this Room room, int teamIndex, int value)
         {

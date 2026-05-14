@@ -1,7 +1,7 @@
-/*  This file is part of the "Tanks Multiplayer" project by FLOBUK.
- *  You are only allowed to use these resources if you've bought them from the Unity Asset Store.
- * 	You shall not license, sublicense, sell, resell, transfer, assign, distribute or
- * 	otherwise make available to any third party the Service or the Content. */
+/*  File này là một phần của dự án "Tanks Multiplayer" của FLOBUK.
+ *  Bạn chỉ được phép sử dụng các tài nguyên này nếu bạn đã mua chúng từ Unity Asset Store.
+ * 	Bạn không được cấp phép, cấp phép con, bán, bán lại, chuyển nhượng, chỉ định, phân phối hoặc
+ * 	cung cấp Dịch vụ hoặc Nội dung cho bất kỳ bên thứ ba nào. */
 
 using System.Collections;
 using UnityEngine;
@@ -10,24 +10,24 @@ using Photon.Pun;
 namespace TanksMP
 {          
     /// <summary>
-    /// Responsible for spawning AI bots when in offline mode, otherwise gets disabled.
+    /// Chịu trách nhiệm tạo các bot AI khi ở chế độ offline, nếu không sẽ bị vô hiệu hóa.
     /// </summary>
 	public class BotSpawner : MonoBehaviour
     {                
         /// <summary>
-        /// Amount of bots to spawn across all teams.
+        /// Số lượng bot cần tạo trên tất cả các đội.
         /// </summary>
         public int maxBots;
         
         /// <summary>
-        /// Selection of bot prefabs to choose from.
+        /// Danh sách các prefab bot để lựa chọn.
         /// </summary>
         public GameObject[] prefabs;
         
         
         void Awake()
         {
-            //disabled when not in offline mode
+            //vô hiệu hóa khi không ở chế độ offline
             if ((NetworkMode)PlayerPrefs.GetInt(PrefsKeys.networkMode) != NetworkMode.Offline)
                 this.enabled = false;
         }
@@ -35,22 +35,22 @@ namespace TanksMP
 
         IEnumerator Start()
         {
-            //wait a second for all script to initialize
+            //đợi một giây để tất cả script khởi tạo xong
             yield return new WaitForSeconds(1);
 
-            //loop over bot count
+            //lặp qua số lượng bot
 			for(int i = 0; i < maxBots; i++)
             {
-                //randomly choose bot from array of bot prefabs
-                //spawn bot across the simulated private network
+                //chọn ngẫu nhiên bot từ mảng các prefab bot
+                //tạo bot thông qua mạng riêng mô phỏng
                 int randIndex = Random.Range(0, prefabs.Length);
                 GameObject obj = PhotonNetwork.Instantiate(prefabs[randIndex].name, Vector3.zero, Quaternion.identity, 0);
 
-                //let the local host determine the team assignment
+                //để máy chủ cục bộ xác định việc phân chia đội
                 Player p = obj.GetComponent<Player>();
                 p.GetView().SetTeam(GameManager.GetInstance().GetTeamFill());
 
-                //increase corresponding team size
+                //tăng kích thước đội tương ứng
                 PhotonNetwork.CurrentRoom.AddSize(p.GetView().GetTeam(), +1);
 
                 yield return new WaitForSeconds(0.25f);

@@ -1,7 +1,7 @@
-/*  This file is part of the "Tanks Multiplayer" project by FLOBUK.
- *  You are only allowed to use these resources if you've bought them from the Unity Asset Store.
- * 	You shall not license, sublicense, sell, resell, transfer, assign, distribute or
- * 	otherwise make available to any third party the Service or the Content. */
+/*  File này là một phần của dự án "Tanks Multiplayer" của FLOBUK.
+ *  Bạn chỉ được phép sử dụng các tài nguyên này nếu bạn đã mua chúng từ Unity Asset Store.
+ * 	Bạn không được cấp phép, cấp phép con, bán, bán lại, chuyển nhượng, chỉ định, phân phối hoặc
+ * 	cung cấp Dịch vụ hoặc Nội dung cho bất kỳ bên thứ ba nào. */
 
 using System;
 using UnityEngine;
@@ -13,9 +13,9 @@ using UnityEngine.Advertisements;
 namespace TanksMP
 {
     /// <summary>
-    /// Manager handling the full workflow of showing video ads, reacting
-    /// to completed/failed video views and resulting events. Implements a
-    /// custom, percentage based chance for showing ads. Using Unity Ads.
+    /// Manager xử lý toàn bộ quy trình hiển thị quảng cáo video, phản hồi
+    /// các lượt xem video hoàn thành/thất bại và các sự kiện kết quả. Triển khai một
+    /// cơ hội hiển thị quảng cáo tùy chỉnh dựa trên tỷ lệ phần trăm. Sử dụng Unity Ads.
     /// </summary>
     #if UNITY_ADS
     public class UnityAdsManager : MonoBehaviour, IUnityAdsInitializationListener, IUnityAdsLoadListener, IUnityAdsShowListener
@@ -25,47 +25,47 @@ namespace TanksMP
     {
         #if UNITY_ADS
         /// <summary>
-        /// Fired whenever a view completes, providing the result.
+        /// Được kích hoạt bất cứ khi nào một lượt xem hoàn tất, cung cấp kết quả.
         /// </summary>
         public static event Action<ShowResult> adResultEvent;
         
-        //reference to this script instance
+        //tham chiếu đến instance của script này
         private static UnityAdsManager instance;
 
         /// <summary>
-        /// Android Game ID displayed in the Unity Ads dashboard.
+        /// Android Game ID được hiển thị trong bảng điều khiển Unity Ads.
         /// </summary>
         public string gameIdAndroid;
 
         /// <summary>
-        /// IOS Game ID displayed in the Unity Ads dashboard.
+        /// IOS Game ID được hiển thị trong bảng điều khiển Unity Ads.
         /// </summary>
         public string gameIdIOS;
 
         /// <summary>
-        /// Android placement ID displayed in the Unity Ads dashboard.
+        /// Android placement ID được hiển thị trong bảng điều khiển Unity Ads.
         /// </summary>
         public string placementIdAndroid = "Interstitial_Android";
 
         /// <summary>
-        /// IOS placement ID displayed in the Unity Ads dashboard.
+        /// IOS placement ID được hiển thị trong bảng điều khiển Unity Ads.
         /// </summary>
         public string placementIdIOS = "Interstitial_iOS";
 
         /// <summary>
-        /// Whether to request sandbox or production ads.
+        /// Có yêu cầu quảng cáo sandbox hay production hay không.
         /// </summary>
         public bool sandbox = false;
         
-        //counter of ad display attempts
+        //bộ đếm các lần thử hiển thị quảng cáo
         private static int counter = 0;
         
-        //whether an ad has been shown during one game round
+        //quảng cáo đã được hiển thị trong một vòng chơi hay chưa
         private static bool adShown = false;
         
         
         /// <summary>
-        /// Returns a reference to this script instance.
+        /// Trả về tham chiếu đến instance của script này.
         /// </summary>
         public static UnityAdsManager GetInstance()
         {
@@ -73,8 +73,8 @@ namespace TanksMP
         }
 
 
-        //sets the instance reference, if not set already,
-        //and keeps listening to scene changes.
+        //thiết lập tham chiếu instance, nếu chưa được thiết lập,
+        // và tiếp tục lắng nghe các thay đổi scene.
         void Awake()
         {
             if (instance != null)
@@ -94,7 +94,7 @@ namespace TanksMP
         }
         
         
-        //reset ad states on scene switch
+        //đặt lại trạng thái quảng cáo khi chuyển đổi scene
         void OnSceneLoaded(Scene scene, LoadSceneMode mode)
         {
             counter = 0;
@@ -102,7 +102,7 @@ namespace TanksMP
         }
 
 
-        //tries to load a new ad and cache it for display when needed
+        //cố gắng load một quảng cáo mới và lưu trữ nó để hiển thị khi cần thiết
         private void LoadAd()
         {
             if (!Advertisement.isInitialized)
@@ -120,24 +120,24 @@ namespace TanksMP
             
         
         /// <summary>
-        /// Tries to display a video ad. This could fail if an ad is not available or ready,
-        /// the player requesting the ad is hosting the game - in which case showing an ad would
-        /// pause the game for all clients - an ad was already shown or the percentage based
-        /// chance has calculated to not show an ad for this attempt. All these checks can be
-        /// skipped by setting the argument passed in to true, effectively forcing an ad to show.
+        /// Cố gắng hiển thị quảng cáo video. Điều này có thể thất bại nếu quảng cáo không khả dụng hoặc chưa sẵn sàng,
+        /// người chơi yêu cầu quảng cáo đang làm host - trong trường hợp đó, việc hiển thị quảng cáo sẽ làm
+        /// tạm dừng trò chơi cho tất cả các client - quảng cáo đã được hiển thị hoặc cơ hội
+        /// dựa trên tỷ lệ phần trăm đã tính toán không hiển thị quảng cáo cho lần thử này. Tất cả các kiểm tra này có thể
+        /// được bỏ qua bằng cách đặt đối số truyền vào thành true, ép buộc hiển thị quảng cáo.
         /// </summary>
         public static bool ShowAd(bool force = false)
         {
 			if(force || !GameManager.isMaster() && !adShown && GetInstance().shouldShowAd())
             {
-                //this attempt should show an ad: initialize ad and pass the result to the HandleResult method
+                //lần thử này nên hiển thị quảng cáo: khởi tạo quảng cáo và chuyển kết quả cho phương thức HandleResult
                 GetInstance().LoadAd();
                 return true;
             }
             
-            //at this point we were not able to show an ad yet.
-            //if this ad attempt has not been forced, increase attempt counter
-            //so the next attempt has a higher probability of showing an ad
+            //tại thời điểm này chúng ta chưa thể hiển thị quảng cáo.
+            //nếu lần thử quảng cáo này không được ép buộc, hãy tăng bộ đếm số lần thử
+            //để lần thử tiếp theo có xác suất hiển thị quảng cáo cao hơn
             if(!force) counter++;
                 
             return false;
@@ -145,7 +145,7 @@ namespace TanksMP
         
         
         /// <summary>
-        /// Returns whether an ad has been shown already.
+        /// Trả về việc quảng cáo đã được hiển thị hay chưa.
         /// </summary>
         public static bool didShowAd()
         {
@@ -153,11 +153,11 @@ namespace TanksMP
         }
 
 
-        //called by Unity Ads on completed video views
+        //được gọi bởi Unity Ads khi hoàn tất lượt xem video
         private void HandleResult(ShowResult result)
         {
-            //if the result is finished or skipped,
-            //the ad was actually shown during the game
+            //nếu kết quả là hoàn thành hoặc bỏ qua,
+            //quảng cáo thực sự đã được hiển thị trong trò chơi
             switch(result)
             {
               case ShowResult.Finished:
@@ -165,19 +165,19 @@ namespace TanksMP
                   break;
             }
             
-            //pass result to listeners
+            //chuyển kết quả cho các trình lắng nghe (listeners)
             adResultEvent?.Invoke(result);
         }
         
         
-        //calculates the chance for showing an ad,
-        //based on the total attempt count
+        //tính toán cơ hội hiển thị quảng cáo,
+        //dựa trên tổng số lần thử
         private bool shouldShowAd()
         {   
-            //multiply chance by attempt count in steps of 20%
-            //example: 1. attempt = 0%, 2.= 20%, 3.= 40%, 4.= 60%, 5.= 80%, 6.= 100%
-            //we should then show an ad if the random value then falls into this range
-            //this is called on player death, meaning after 6 deaths the chance is 100%
+            //nhân cơ hội với số lần thử theo các bước 20%
+            //ví dụ: lần thử thứ 1 = 0%, thứ 2 = 20%, thứ 3 = 40%, thứ 4 = 60%, thứ 5 = 80%, thứ 6 = 100%
+            //sau đó chúng ta nên hiển thị quảng cáo nếu giá trị ngẫu nhiên nằm trong phạm vi này
+            //điều này được gọi khi người chơi hy sinh, có nghĩa là sau 6 lần hy sinh, cơ hội là 100%
             float adChance = Mathf.Clamp01(counter * 0.2f);
             float adValue = UnityEngine.Random.value;
             bool adTrigger = adValue <= adChance;
@@ -188,7 +188,7 @@ namespace TanksMP
 
 
         /// <summary>
-        /// Unity Ads initialization complete.
+        /// Khởi tạo Unity Ads hoàn tất.
         /// </summary>
         public void OnInitializationComplete()
         {
@@ -197,7 +197,7 @@ namespace TanksMP
 
 
         /// <summary>
-        /// Unity Ads initialization failed.
+        /// Khởi tạo Unity Ads thất bại.
         /// </summary>
         public void OnInitializationFailed(UnityAdsInitializationError error, string message)
         {
@@ -206,7 +206,7 @@ namespace TanksMP
 
 
         /// <summary>
-        /// Unity Ads placement loaded. Shows Ad immediately.
+        /// Đã load Unity Ads placement. Hiển thị quảng cáo ngay lập tức.
         /// </summary>
         public void OnUnityAdsAdLoaded(string adUnitId)
         {
@@ -215,7 +215,7 @@ namespace TanksMP
 
 
         /// <summary>
-        /// Unity Ads error loading placement.
+        /// Lỗi Unity Ads khi load placement.
         /// </summary>
         public void OnUnityAdsFailedToLoad(string adUnitId, UnityAdsLoadError error, string message)
         {
@@ -224,7 +224,7 @@ namespace TanksMP
 
 
         /// <summary>
-        /// Unity Ads placement started showing.
+        /// Bắt đầu hiển thị Unity Ads placement.
         /// </summary>
         public void OnUnityAdsShowStart(string adUnitId)
         {
@@ -233,7 +233,7 @@ namespace TanksMP
 
 
         /// <summary>
-        /// Unity Ads placement was clicked.
+        /// Unity Ads placement đã được click.
         /// </summary>
         public void OnUnityAdsShowClick(string adUnitId)
         {
@@ -242,17 +242,17 @@ namespace TanksMP
 
 
         /// <summary>
-        /// Unity Ads placement was shown.
+        /// Unity Ads placement đã được hiển thị xong.
         /// </summary>
         public void OnUnityAdsShowComplete(string placementId, UnityAdsShowCompletionState showCompletionState)
         {
-            //we do not differentiate between finished and skipped
-            //either way, an ad was shown so that is enough
+            //chúng ta không phân biệt giữa hoàn thành và bỏ qua
+            //dù thế nào đi nữa, một quảng cáo đã được hiển thị nên thế là đủ rồi
             HandleResult(ShowResult.Finished);
         }
 
 
-        /// Unity Ads error showing loaded placement.
+        /// Lỗi Unity Ads khi hiển thị placement đã load.
         public void OnUnityAdsShowFailure(string placementId, UnityAdsShowError error, string message)
         {
             HandleResult(ShowResult.Failed);

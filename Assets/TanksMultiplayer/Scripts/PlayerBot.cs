@@ -1,7 +1,7 @@
-/*  This file is part of the "Tanks Multiplayer" project by FLOBUK.
- *  You are only allowed to use these resources if you've bought them from the Unity Asset Store.
- * 	You shall not license, sublicense, sell, resell, transfer, assign, distribute or
- * 	otherwise make available to any third party the Service or the Content. */
+/*  File này là một phần của dự án "Tanks Multiplayer" của FLOBUK.
+ *  Bạn chỉ được phép sử dụng các tài nguyên này nếu bạn đã mua chúng từ Unity Asset Store.
+ * 	Bạn không được cấp phép, cấp phép con, bán, bán lại, chuyển nhượng, chỉ định, phân phối hoặc
+ * 	cung cấp Dịch vụ hoặc Nội dung cho bất kỳ bên thứ ba nào. */
 
 using System.Collections;
 using System.Collections.Generic;
@@ -12,14 +12,14 @@ using Photon.Pun;
 namespace TanksMP
 {          
     /// <summary>
-    /// Implementation of AI bots by overriding methods of the Player class.
+    /// Triển khai các bot AI bằng cách ghi đè (override) các phương thức của lớp Player.
     /// </summary>
 	public class PlayerBot : Player
     {
-        //custom properties per PhotonPlayer do not work in offline mode
-        //(actually they do, but for objects spawned by the master client,
-        //PhotonPlayer is always the local master client. This means that
-        //setting custom player properties would apply to all objects)
+        //các thuộc tính tùy chỉnh (custom properties) cho mỗi PhotonPlayer không hoạt động trong chế độ offline
+        //(thực tế chúng có hoạt động, nhưng đối với các đối tượng được spawn bởi master client,
+        //PhotonPlayer luôn là local master client. Điều này có nghĩa là việc
+        //thiết lập các thuộc tính người chơi tùy chỉnh sẽ áp dụng cho tất cả các đối tượng)
         [HideInInspector] public string myName;
         [HideInInspector] public int teamIndex;
         [HideInInspector] public int health;
@@ -28,35 +28,35 @@ namespace TanksMP
         [HideInInspector] public int currentBullet;
 
         /// <summary>
-        /// Radius in units for detecting other players.
+        /// Bán kính tính bằng đơn vị để phát hiện những người chơi khác.
         /// </summary>
         public float range = 6f;
 
-        //list of enemy players that are in range of this bot
+        //danh sách những người chơi kẻ thù nằm trong phạm vi của bot này
         private List<GameObject> inRange = new List<GameObject>();
 
-        //reference to the agent component
+        //tham chiếu đến thành phần agent (NavMeshAgent)
         private NavMeshAgent agent;
 
-        //current destination on the navigation mesh
+        //điểm đến hiện tại trên navigation mesh
         private Vector3 targetPoint;
 
-        //timestamp when next shot should happen
+        //dấu thời gian (timestamp) khi phát bắn tiếp theo sẽ xảy ra
         private float nextShot;
 
-        //toggle for update logic
+        //công tắc bật/tắt cho logic cập nhật (update)
         private bool isDead = false;
         
         
-        //called before SyncVar updates
+        //được gọi trước khi cập nhật SyncVar
         void Start()
         {           
-            //get components and set camera target
+            //lấy các thành phần và thiết lập mục tiêu camera
             camFollow = Camera.main.GetComponent<FollowTarget>();
             agent = GetComponent<NavMeshAgent>();
             agent.speed = moveSpeed;
 
-            //get corresponding team and colorize renderers in team color
+            //lấy đội tương ứng và tô màu các renderer theo màu đội
             targetPoint = GameManager.GetInstance().GetSpawnPosition(GetView().GetTeam());
             agent.Warp(targetPoint);
 
@@ -64,36 +64,36 @@ namespace TanksMP
             for(int i = 0; i < renderers.Length; i++)
                 renderers[i].material = team.material;
             
-			//set name in label
+			//đặt tên trong nhãn (label)
             label.text = myName = "Bot" + System.String.Format("{0:0000}", Random.Range(1, 9999));
-            //call hooks manually to update
+            //gọi các hook thủ công để cập nhật
             OnHealthChange(GetView().GetHealth());
             OnShieldChange(GetView().GetShield());
 
-            //start enemy detection routine
+            //bắt đầu quy trình phát hiện kẻ thù
             StartCoroutine(DetectPlayers());
         }
         
         
-        //sets inRange list for player detection
+        //thiết lập danh sách inRange để phát hiện người chơi
         IEnumerator DetectPlayers()
         {
-            //wait for initialization
+            //đợi khởi tạo xong
             yield return new WaitForEndOfFrame();
             
-            //detection logic
+            //logic phát hiện
             while(true)
             {
-                //empty list on each iteration
+                //xóa danh sách trong mỗi lần lặp (iteration)
                 inRange.Clear();
 
-                //casts a sphere to detect other player objects within the sphere radius
+                //bắn một hình cầu (sphere) để phát hiện các đối tượng người chơi khác trong bán kính hình cầu
                 Collider[] cols = Physics.OverlapSphere(transform.position, range, LayerMask.GetMask("Player"));
-                //loop over players found within bot radius
+                //lặp qua các người chơi được tìm thấy trong bán kính của bot
                 for (int i = 0; i < cols.Length; i++)
                 {
-                    //get other Player component
-                    //only add the player to the list if its not in this team
+                    //lấy thành phần Player khác
+                    //chỉ thêm người chơi vào danh sách nếu họ không cùng đội này
                     Player p = cols[i].gameObject.GetComponent<Player>();
                     if(p.GetView().GetTeam() != GetView().GetTeam() && !inRange.Contains(cols[i].gameObject))
                     {
@@ -101,27 +101,27 @@ namespace TanksMP
                     }
                 }
                 
-                //wait a second before doing the next range check
+                //đợi một giây trước khi thực hiện kiểm tra phạm vi tiếp theo
                 yield return new WaitForSeconds(1);
             }
         }
         
         
-        //calculate random point for movement on navigation mesh
+        //tính toán điểm ngẫu nhiên để di chuyển trên navigation mesh
         private void RandomPoint(Vector3 center, float range, out Vector3 result)
         {
-            //clear previous target point
+            //xóa điểm mục tiêu trước đó
             result = Vector3.zero;
             
-            //try to find a valid point on the navmesh with an upper limit (10 times)
+            //thử tìm một điểm hợp lệ trên navmesh với giới hạn tối đa (10 lần)
             for (int i = 0; i < 10; i++)
             {
-                //find a point in the movement radius
+                //tìm một điểm trong bán kính di chuyển
                 Vector3 randomPoint = center + (Vector3)Random.insideUnitCircle * range;
                 randomPoint.y = 0;
                 NavMeshHit hit;
 
-                //if the point found is a valid target point, set it and continue
+                //nếu điểm tìm thấy là điểm mục tiêu hợp lệ, hãy thiết lập nó và tiếp tục
                 if (NavMesh.SamplePosition(randomPoint, out hit, 2f, NavMesh.AllAreas)) 
                 {
                     result = hit.position;
@@ -129,15 +129,15 @@ namespace TanksMP
                 }
             }
             
-            //set the target point as the new destination
+            //thiết lập điểm mục tiêu làm điểm đến mới
             agent.SetDestination(result);
         }
         
         
         void FixedUpdate()
         {
-            //don't execute anything if the game is over already,
-            //but termine the agent and path finding routines
+            //không thực hiện gì nếu trò chơi đã kết thúc,
+            //nhưng chấm dứt agent và các quy trình tìm đường (path finding)
             if(GameManager.GetInstance().IsGameOver())
             {
                 agent.isStopped = true;
@@ -146,19 +146,19 @@ namespace TanksMP
                 return;
             }
             
-            //don't continue if this bot is marked as dead
+            //không tiếp tục nếu bot này được đánh dấu là đã chết
             if(isDead) return;
 
-            //stat visualization does not update automatically
+            //trực quan hóa chỉ số (stat visualization) không tự động cập nhật
             OnHealthChange(health);
             OnShieldChange(shield);
 
-            //no enemy players are in range
+            //không có người chơi kẻ thù nào trong phạm vi
             if(inRange.Count == 0)
             {
-                //if this bot reached the the random point on the navigation mesh,
-                //then calculate another random point on the navmesh on continue moving around
-                //with no other players in range, the AI wanders from team spawn to team spawn
+                //nếu bot này đã đạt đến điểm ngẫu nhiên trên navigation mesh,
+                //thì tính toán một điểm ngẫu nhiên khác trên navmesh để tiếp tục di chuyển xung quanh
+                //khi không có người chơi khác trong phạm vi, AI sẽ đi lang thang từ điểm spawn của đội này sang điểm spawn của đội kia
                 if(Vector3.Distance(transform.position, targetPoint) < agent.stoppingDistance)
                 {
                     int teamCount = GameManager.GetInstance().teams.Length;
@@ -167,27 +167,26 @@ namespace TanksMP
             }
             else
             {
-                //if we reached the targeted point, calculate a new point around the enemy
-                //this simulates more fluent "dancing" movement to avoid being shot easily
+                //nếu chúng ta đã đạt đến điểm mục tiêu, hãy tính toán một điểm mới xung quanh kẻ thù
+                //điều này mô phỏng chuyển động "nhảy múa" trôi chảy hơn để tránh bị bắn trúng dễ dàng
                 if(Vector3.Distance(transform.position, targetPoint) < agent.stoppingDistance)
                 {
                     RandomPoint(inRange[0].transform.position, range * 2, out targetPoint);
                 }
                 
-                //shooting loop 
-                for(int i = 0; i < inRange.Count; i++)
+                //vòng lặp bắn súng 178:                 for(int i = 0; i < inRange.Count; i++)
                 {
                     RaycastHit hit;
-                    //raycast to detect visible enemies and shoot at their current position
+                    //raycast để phát hiện kẻ thù hữu hình và bắn vào vị trí hiện tại của họ
                     if (Physics.Linecast(transform.position, inRange[i].transform.position, out hit))
                     {
-                        //get current enemy position and rotate this turret
+                        //lấy vị trí kẻ thù hiện tại và xoay turret này
                         Vector3 lookPos = inRange[i].transform.position;
                         turret.LookAt(lookPos);
                         turret.eulerAngles = new Vector3(0, turret.eulerAngles.y, 0);
                         turretRotation = (short)turret.eulerAngles.y;
 
-                        //find shot direction and shoot there
+                        //tìm hướng bắn và bắn vào đó
                         Vector3 shotDir = lookPos - transform.position;
                         Shoot(new Vector2(shotDir.x, shotDir.z));
                         break;
@@ -198,7 +197,7 @@ namespace TanksMP
 
         
         /// <summary>
-        /// Override of the base method to handle bot respawn separately.
+        /// Ghi đè phương thức cơ sở để xử lý respawn của bot một cách riêng biệt.
         /// </summary>
         [PunRPC]
         protected override void RpcRespawn(short senderId)
@@ -207,21 +206,21 @@ namespace TanksMP
         }
         
         
-        //the actual respawn routine
+        //quy trình respawn thực tế
         IEnumerator Respawn(short senderId)
         {   
-            //stop AI updates
+            //dừng cập nhật AI
             isDead = true;
             inRange.Clear();
             agent.isStopped = true;
             killedBy = null;
 
-            //find original sender game object (killedBy)
+            //tìm game object của người gửi ban đầu (killedBy)
             PhotonView senderView = senderId > 0 ? PhotonView.Find(senderId) : null;
             if (senderView != null && senderView.gameObject != null) killedBy = senderView.gameObject;
 
-            //detect whether the current user was responsible for the kill
-            //yes, that's my kill: increase local kill counter
+            //phát hiện xem người dùng hiện tại có chịu trách nhiệm cho lượt hạ gục này không
+            //đúng, đó là lượt hạ gục của tôi: tăng bộ đếm lượt hạ gục địa phương
             if (killedBy == GameManager.GetInstance().localPlayer.gameObject)
             {
                 GameManager.GetInstance().ui.killCounter[0].text = (int.Parse(GameManager.GetInstance().ui.killCounter[0].text) + 1).ToString();
@@ -230,23 +229,23 @@ namespace TanksMP
 
             if (explosionFX)
             {
-			     //spawn death particles locally using pooling and colorize them in the player's team color
+			     //spawn các hạt hiệu ứng khi chết cục bộ bằng pooling và tô màu chúng theo màu đội của người chơi
                  GameObject particle = PoolManager.Spawn(explosionFX, transform.position, transform.rotation);
                  ParticleColor pColor = particle.GetComponent<ParticleColor>();
                  if(pColor) pColor.SetColor(GameManager.GetInstance().teams[GetView().GetTeam()].material.color);
             }
 				
-			//play sound clip on player death
+			//phát đoạn âm thanh khi người chơi hy sinh
             if(explosionClip) AudioManager.Play3D(explosionClip, transform.position);
 
-            //toggle visibility for all rendering parts (off)
+            //tắt hiển thị cho tất cả các phần dựng hình (rendering)
             ToggleComponents(false);
-            //wait global respawn delay until reactivation
+            //đợi thời gian trễ respawn toàn cục cho đến khi tái kích hoạt
             yield return new WaitForSeconds(GameManager.GetInstance().respawnTime);
-            //toggle visibility again (on)
+            //bật lại hiển thị (on)
             ToggleComponents(true);
 
-            //respawn and continue with pathfinding
+            //respawn và tiếp tục tìm đường
             targetPoint = GameManager.GetInstance().GetSpawnPosition(GetView().GetTeam());
             transform.position = targetPoint;
             agent.Warp(targetPoint);
@@ -255,7 +254,7 @@ namespace TanksMP
         }
 
 
-        //disable rendering or blocking components
+        //vô hiệu hóa các thành phần dựng hình hoặc chặn đường (blocking)
         void ToggleComponents(bool state)
         {
             GetComponent<Rigidbody>().isKinematic = state;

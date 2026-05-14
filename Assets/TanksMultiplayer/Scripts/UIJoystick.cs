@@ -1,7 +1,7 @@
-﻿/*  This file is part of the "Tanks Multiplayer" project by FLOBUK.
- *  You are only allowed to use these resources if you've bought them from the Unity Asset Store.
- * 	You shall not license, sublicense, sell, resell, transfer, assign, distribute or
- * 	otherwise make available to any third party the Service or the Content. */
+/*  File này là một phần của dự án "Tanks Multiplayer" của FLOBUK.
+ *  Bạn chỉ được phép sử dụng các tài nguyên này nếu bạn đã mua chúng từ Unity Asset Store.
+ * 	Bạn không được cấp phép, cấp phép con, bán, bán lại, chuyển nhượng, chỉ định, phân phối hoặc
+ * 	cung cấp Dịch vụ hoặc Nội dung cho bất kỳ bên thứ ba nào. */
 
 using System;
 using UnityEngine;
@@ -11,56 +11,56 @@ using UnityEngine.EventSystems;
 namespace TanksMP
 {
     /// <summary>
-    /// Joystick component for controlling player movement and actions using Unity UI events.
-    /// There can be multiple joysticks on the screen at the same time, implementing different callbacks.
+    /// Thành phần Joystick để điều khiển chuyển động và hành động của người chơi bằng các sự kiện Unity UI.
+    /// Có thể có nhiều joystick trên màn hình cùng một lúc, thực hiện các callback khác nhau.
     /// </summary>
     public class UIJoystick : MonoBehaviour, IBeginDragHandler, IDragHandler, IEndDragHandler
     {
         /// <summary>
-        /// Callback triggered when joystick starts moving by user input.
+        /// Callback được kích hoạt khi joystick bắt đầu di chuyển do đầu vào của người dùng.
         /// </summary>
         public event Action onDragBegin;
         
         /// <summary>
-        /// Callback triggered when joystick is moving or hold down.
+        /// Callback được kích hoạt khi joystick đang di chuyển hoặc được giữ xuống.
         /// </summary>
         public event Action<Vector2> onDrag;
         
         /// <summary>
-        /// Callback triggered when joystick input is being released.
+        /// Callback được kích hoạt khi đầu vào của joystick được thả ra.
         /// </summary>
         public event Action onDragEnd;
        
         /// <summary>
-        /// The target object i.e. jostick thumb being dragged by the user.
+        /// Đối tượng mục tiêu, tức là nút joystick (thumb) đang được người dùng kéo.
         /// </summary>
         public Transform target;
 
         /// <summary>
-        /// Maximum radius for the target object to be moved in distance from the center.
+        /// Bán kính tối đa mà đối tượng mục tiêu có thể di chuyển so với tâm.
         /// </summary>
         public float radius = 50f;
         
         /// <summary>
-        /// Current position of the target object on the x and y axis in 2D space.
-        /// Values are calculated in the range of [-1, 1] translated to left/down right/up.
+        /// Vị trí hiện tại của đối tượng mục tiêu trên trục x và y trong không gian 2D.
+        /// Các giá trị được tính toán trong phạm vi [-1, 1] tương ứng với trái/dưới và phải/trên.
         /// </summary>
         public Vector2 position;
         
-        //keeping track of current drag state
+        //theo dõi trạng thái kéo hiện tại
         private bool isDragging = false;
         
-        //reference to thumb being dragged around
+        //tham chiếu đến nút joystick đang được kéo quanh
 		private RectTransform thumb;
 
 
-        //initialize variables
+        //khởi tạo các biến
 		void Start()
 		{
 			thumb = target.GetComponent<RectTransform>();
 
-			//in the editor, disable input received by joystick graphics:
-            //we want them to be visible but not receive or block any input
+			//trong editor, vô hiệu hóa đầu vào nhận được bởi đồ họa joystick:
+            //chúng ta muốn chúng hiển thị nhưng không nhận hoặc chặn bất kỳ đầu vào nào
 			#if UNITY_EDITOR
 				Graphic[] graphics = GetComponentsInChildren<Graphic>();
 				for(int i = 0; i < graphics.Length; i++)
@@ -70,7 +70,7 @@ namespace TanksMP
 
 
         /// <summary>
-        /// Event fired by UI Eventsystem on drag start.
+        /// Sự kiện được kích hoạt bởi UI Eventsystem khi bắt đầu kéo.
         /// </summary>
         public void OnBeginDrag(PointerEventData data)
         {
@@ -81,67 +81,67 @@ namespace TanksMP
 
 
         /// <summary>
-        /// Event fired by UI Eventsystem on drag.
+        /// Sự kiện được kích hoạt bởi UI Eventsystem khi đang kéo.
         /// </summary>
         public void OnDrag(PointerEventData data)
         {
-            //get RectTransforms of involved components
+            //lấy các RectTransform của các thành phần liên quan
             RectTransform draggingPlane = transform as RectTransform;
             Vector3 mousePos;
 
-            //check whether the dragged position is inside the dragging rect,
-            //then set global mouse position and assign it to the joystick thumb
+            //kiểm tra xem vị trí được kéo có nằm trong hình chữ nhật kéo hay không,
+            //sau đó đặt vị trí chuột toàn cục và gán nó cho nút joystick
             if (RectTransformUtility.ScreenPointToWorldPointInRectangle(draggingPlane, data.position, data.pressEventCamera, out mousePos))
             {
                 thumb.position = mousePos;
             }
 
-            //length of the touch vector (magnitude)
-            //calculated from the relative position of the joystick thumb
+            //độ dài của vector chạm (độ lớn - magnitude)
+            //được tính toán từ vị trí tương đối của nút joystick
             float length = target.localPosition.magnitude;
 
-            //if the thumb leaves the joystick's boundaries,
-            //clamp it to the max radius
+            //nếu nút joystick rời khỏi ranh giới của joystick,
+            //hãy giới hạn nó ở bán kính tối đa
             if (length > radius)
             {
                 target.localPosition = Vector3.ClampMagnitude(target.localPosition, radius);
             }
 
-            //set the Vector2 thumb position based on the actual sprite position
+            //thiết lập vị trí Vector2 của nút dựa trên vị trí sprite thực tế
             position = target.localPosition;
-            //smoothly lerps the Vector2 thumb position based on the old positions
+            //nội suy mượt mà (lerp) vị trí Vector2 của nút dựa trên các vị trí cũ
             position = position / radius * Mathf.InverseLerp(radius, 2, 1);
         }
         
         
-        //set joystick thumb position to drag position each frame
+        //đặt vị trí nút joystick thành vị trí kéo trong mỗi frame
         void Update()
         {
-            //in the editor the joystick position does not move, we have to simulate it
-			//mirror player input to joystick position and calculate thumb position from that
+            //trong editor, vị trí joystick không di chuyển, chúng ta phải mô phỏng nó
+			//phản chiếu đầu vào của người chơi vào vị trí joystick và tính toán vị trí nút từ đó
 			#if UNITY_EDITOR
 				target.localPosition =  position * radius;
 				target.localPosition = Vector3.ClampMagnitude(target.localPosition, radius);
 			#endif
 
-            //check for actual drag state and fire callback. We are doing this in Update(),
-            //not OnDrag, because OnDrag is only called when the joystick is moving. But we
-            //actually want to keep moving the player even though the jostick is being hold down
+            //kiểm tra trạng thái kéo thực tế và kích hoạt callback. Chúng ta thực hiện việc này trong Update(),
+            //không phải OnDrag, vì OnDrag chỉ được gọi khi joystick đang di chuyển. Nhưng chúng ta
+            //thực sự muốn tiếp tục di chuyển người chơi ngay cả khi joystick đang được giữ xuống
             if(isDragging && onDrag != null)
                 onDrag(position);
         }
 
 
         /// <summary>
-        /// Event fired by UI Eventsystem on drag end.
+        /// Sự kiện được kích hoạt bởi UI Eventsystem khi kết thúc kéo.
         /// </summary>
         public void OnEndDrag(PointerEventData data)
         {
-            //we aren't dragging anymore, reset to default position
+            //chúng ta không còn kéo nữa, đặt lại về vị trí mặc định
             position = Vector2.zero;
             target.position = transform.position;
             
-            //set dragging to false and fire callback
+            //đặt dragging thành false và kích hoạt callback
             isDragging = false;
             if (onDragEnd != null)
                 onDragEnd();

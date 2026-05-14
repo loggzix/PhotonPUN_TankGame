@@ -1,7 +1,7 @@
-﻿/*  This file is part of the "Tanks Multiplayer" project by FLOBUK.
- *  You are only allowed to use these resources if you've bought them from the Unity Asset Store.
- * 	You shall not license, sublicense, sell, resell, transfer, assign, distribute or
- * 	otherwise make available to any third party the Service or the Content. */
+/*  File này là một phần của dự án "Tanks Multiplayer" của FLOBUK.
+ *  Bạn chỉ được phép sử dụng các tài nguyên này nếu bạn đã mua chúng từ Unity Asset Store.
+ * 	Bạn không được cấp phép, cấp phép con, bán, bán lại, chuyển nhượng, chỉ định, phân phối hoặc
+ * 	cung cấp Dịch vụ hoặc Nội dung cho bất kỳ bên thứ ba nào. */
 
 using Photon.Pun;
 using Hashtable = ExitGames.Client.Photon.Hashtable;
@@ -9,12 +9,12 @@ using Hashtable = ExitGames.Client.Photon.Hashtable;
 namespace TanksMP
 {
     /// <summary>
-    /// This class extends Photon's PhotonPlayer object by custom properties.
-    /// Provides several methods for setting and getting variables out of them.
+    /// Lớp này mở rộng đối tượng PhotonPlayer của Photon bằng các thuộc tính tùy chỉnh (custom properties).
+    /// Cung cấp một số phương thức để thiết lập và lấy các biến từ chúng.
     /// </summary>
     public static class PlayerExtensions
     {
-        //keys for saving and accessing values in custom properties Hashtable
+        //các key để lưu và truy cập các giá trị trong Hashtable custom properties
         public const string team = "team";
         public const string health = "health";
         public const string shield = "shield";
@@ -23,8 +23,8 @@ namespace TanksMP
 
 
         /// <summary>
-        /// Returns the networked player nick name.
-        /// Offline: bot name. Online: PhotonPlayer name.
+        /// Trả về biệt danh của người chơi qua mạng.
+        /// Offline: tên bot. Online: tên PhotonPlayer.
         /// </summary>
         public static string GetName(this PhotonView player)
         {
@@ -41,8 +41,8 @@ namespace TanksMP
         }
 
         /// <summary>
-        /// Offline: returns the team number of a bot stored in PlayerBot.
-        /// Fallback to online mode for the master or in case offline mode was turned off.
+        /// Offline: trả về số đội của một bot được lưu trữ trong PlayerBot.
+        /// Dự phòng sang chế độ online cho master hoặc trong trường hợp chế độ offline đã được tắt.
         /// </summary>
         public static int GetTeam(this PhotonView player)
         {
@@ -59,7 +59,7 @@ namespace TanksMP
         }
 
         /// <summary>
-        /// Online: returns the networked team number of the player out of properties.
+        /// Online: trả về số đội qua mạng của người chơi từ custom properties.
         /// </summary>
         public static int GetTeam(this Photon.Realtime.Player player)
         {
@@ -67,8 +67,8 @@ namespace TanksMP
         }
 
         /// <summary>
-        /// Offline: synchronizes the team number of a PlayerBot locally.
-        /// Fallback to online mode for the master or in case offline mode was turned off.
+        /// Offline: đồng bộ hóa số đội của một PlayerBot cục bộ.
+        /// Dự phòng sang chế độ online cho master hoặc trong trường hợp chế độ offline đã được tắt.
         /// </summary>
         public static void SetTeam(this PhotonView player, int teamIndex)
         {
@@ -86,7 +86,7 @@ namespace TanksMP
         }
 
         /// <summary>
-        /// Online: synchronizes the team number of the player for all players via properties.
+        /// Online: đồng bộ hóa số đội của người chơi cho tất cả người chơi thông qua custom properties.
         /// </summary>
         public static void SetTeam(this Photon.Realtime.Player player, int teamIndex)
         {
@@ -94,8 +94,8 @@ namespace TanksMP
         }
 
         /// <summary>
-        /// Offline: returns the health value of a bot stored in PlayerBot.
-        /// Fallback to online mode for the master or in case offline mode was turned off.
+        /// Offline: trả về giá trị máu của một bot được lưu trữ trong PlayerBot.
+        /// Dự phòng sang chế độ online cho master hoặc trong trường hợp chế độ offline đã được tắt.
         /// </summary>
         public static int GetHealth(this PhotonView player)
         {
@@ -112,7 +112,7 @@ namespace TanksMP
         }
 
         /// <summary>
-        /// Online: returns the networked health value of the player out of properties.
+        /// Online: trả về giá trị máu qua mạng của người chơi từ custom properties.
         /// </summary>
         public static int GetHealth(this Photon.Realtime.Player player)
         {
@@ -120,8 +120,8 @@ namespace TanksMP
         }
 
         /// <summary>
-        /// Offline: synchronizes the health value of a PlayerBot locally.
-        /// Fallback to online mode for the master or in case offline mode was turned off.
+        /// Offline: đồng bộ hóa giá trị máu của một PlayerBot cục bộ.
+        /// Dự phòng sang chế độ online cho master hoặc trong trường hợp chế độ offline đã được tắt.
         /// </summary>
         public static void SetHealth(this PhotonView player, int value)
         {
@@ -139,7 +139,7 @@ namespace TanksMP
         }
 
         /// <summary>
-        /// Online: synchronizes the health value of the player for all players via properties.
+        /// Online: đồng bộ hóa giá trị máu của người chơi cho tất cả người chơi thông qua custom properties.
         /// </summary>
         public static void SetHealth(this Photon.Realtime.Player player, int value)
         {
@@ -147,8 +147,8 @@ namespace TanksMP
         }
 
         /// <summary>
-        /// Offline: returns the shield value of a bot stored in PlayerBot.
-        /// Fallback to online mode for the master or in case offline mode was turned off.
+        /// Offline: trả về giá trị giáp của một bot được lưu trữ trong PlayerBot.
+        /// Dự phòng sang chế độ online cho master hoặc trong trường hợp chế độ offline đã được tắt.
         /// </summary>
         public static int GetShield(this PhotonView player)
         {
@@ -165,7 +165,7 @@ namespace TanksMP
         }
 
         /// <summary>
-        /// Online: returns the networked shield value of the player out of properties.
+        /// Online: trả về giá trị giáp qua mạng của người chơi từ custom properties.
         /// </summary>
         public static int GetShield(this Photon.Realtime.Player player)
         {
@@ -173,8 +173,8 @@ namespace TanksMP
         }
 
         /// <summary>
-        /// Offline: synchronizes the shield value of a PlayerBot locally.
-        /// Fallback to online mode for the master or in case offline mode was turned off.
+        /// Offline: đồng bộ hóa giá trị giáp của một PlayerBot cục bộ.
+        /// Dự phòng sang chế độ online cho master hoặc trong trường hợp chế độ offline đã được tắt.
         /// </summary>
         public static void SetShield(this PhotonView player, int value)
         {
@@ -192,7 +192,7 @@ namespace TanksMP
         }
 
         /// <summary>
-        /// Online: synchronizes the shield value of the player for all players via properties.
+        /// Online: đồng bộ hóa giá trị giáp của người chơi cho tất cả người chơi thông qua custom properties.
         /// </summary>
         public static void SetShield(this Photon.Realtime.Player player, int value)
         {
@@ -200,7 +200,7 @@ namespace TanksMP
         }
 
         /// <summary>
-        /// Decreases the networked shield value of the player or bot by the amount passed in.
+        /// Giảm giá trị giáp qua mạng của người chơi hoặc bot theo lượng được truyền vào.
         /// </summary>
         public static int DecreaseShield(this PhotonView player, int value)
         {
@@ -212,8 +212,8 @@ namespace TanksMP
         }
 
         /// <summary>
-        /// Offline: returns the ammo value of a bot stored in PlayerBot.
-        /// Fallback to online mode for the master or in case offline mode was turned off.
+        /// Offline: trả về giá trị đạn của một bot được lưu trữ trong PlayerBot.
+        /// Dự phòng sang chế độ online cho master hoặc trong trường hợp chế độ offline đã được tắt.
         /// </summary>
         public static int GetAmmo(this PhotonView player)
         {
@@ -230,7 +230,7 @@ namespace TanksMP
         }
 
         /// <summary>
-        /// Online: returns the networked ammo value of the player out of properties.
+        /// Online: trả về giá trị đạn qua mạng của người chơi từ custom properties.
         /// </summary>
         public static int GetAmmo(this Photon.Realtime.Player player)
         {
@@ -238,9 +238,9 @@ namespace TanksMP
         }
 
         /// <summary>
-        /// Offline: synchronizes the ammo count of a PlayerBot locally.
-        /// Provides an optional index parameter for setting a new bullet and ammo together.
-        /// Fallback to online mode for the master or in case offline mode was turned off.
+        /// Offline: đồng bộ hóa số lượng đạn của một PlayerBot cục bộ.
+        /// Cung cấp một tham số chỉ số tùy chọn để thiết lập đạn mới và số đạn cùng nhau.
+        /// Dự phòng sang chế độ online cho master hoặc trong trường hợp chế độ offline đã được tắt.
         /// </summary>
         public static void SetAmmo(this PhotonView player, int value, int index = -1)
         {
@@ -260,8 +260,8 @@ namespace TanksMP
         }
 
         /// <summary>
-        /// Online: synchronizes the ammo count of the player for all players via properties.
-        /// Provides an optional index parameter for setting a new bullet and ammo together.
+        /// Online: đồng bộ hóa số lượng đạn của người chơi cho tất cả người chơi thông qua custom properties.
+        /// Cung cấp một tham số chỉ số tùy chọn để thiết lập đạn mới và số đạn cùng nhau.
         /// </summary>
         public static void SetAmmo(this Photon.Realtime.Player player, int value, int index = -1)
         {
@@ -274,8 +274,8 @@ namespace TanksMP
         }
 
         /// <summary>
-        /// Decreases the networked ammo value of the player or bot by the amount passed in.
-        /// If the player runs out of ammo, the bullet index is set to the default automatically.
+        /// Giảm giá trị đạn qua mạng của người chơi hoặc bot theo lượng được truyền vào.
+        /// Nếu người chơi hết đạn, chỉ số đạn sẽ tự động được đặt về mặc định.
         /// </summary>
         public static int DecreaseAmmo(this PhotonView player, int value)
         {
@@ -291,8 +291,8 @@ namespace TanksMP
         }
 
         /// <summary>
-        /// Offline: returns the bullet index of a bot stored in PlayerBot.
-        /// Fallback to online mode for the master or in case offline mode was turned off.
+        /// Offline: trả về chỉ số đạn (bullet index) của một bot được lưu trữ trong PlayerBot.
+        /// Dự phòng sang chế độ online cho master hoặc trong trường hợp chế độ offline đã được tắt.
         /// </summary>
         public static int GetBullet(this PhotonView player)
         {
@@ -309,7 +309,7 @@ namespace TanksMP
         }
 
         /// <summary>
-        /// Online: returns the networked bullet index of the player out of properties.
+        /// Online: trả về chỉ số đạn qua mạng của người chơi từ custom properties.
         /// </summary>
         public static int GetBullet(this Photon.Realtime.Player player)
         {
@@ -317,8 +317,8 @@ namespace TanksMP
         }
 
         /// <summary>
-        /// Offline: synchronizes the currently selected bullet of a PlayerBot locally.
-        /// Fallback to online mode for the master or in case offline mode was turned off.
+        /// Offline: đồng bộ hóa loại đạn hiện đang được chọn của một PlayerBot cục bộ.
+        /// Dự phòng sang chế độ online cho master hoặc trong trường hợp chế độ offline đã được tắt.
         /// </summary>
         public static void SetBullet(this PhotonView player, int value)
         {
@@ -336,7 +336,7 @@ namespace TanksMP
         }
 
         /// <summary>
-        /// Online: Synchronizes the currently selected bullet of the player for all players via properties.
+        /// Online: Đồng bộ hóa loại đạn hiện đang được chọn của người chơi cho tất cả người chơi thông qua custom properties.
         /// </summary>
         public static void SetBullet(this Photon.Realtime.Player player, int value)
         {
@@ -345,8 +345,8 @@ namespace TanksMP
 
 
         /// <summary>
-        /// Offline: clears all properties of a PlayerBot locally.
-        /// Fallback to online mode for the master or in case offline mode was turned off.
+        /// Offline: xóa tất cả các thuộc tính của một PlayerBot cục bộ.
+        /// Dự phòng sang chế độ online cho master hoặc trong trường hợp chế độ offline đã được tắt.
         /// </summary>
         public static void Clear(this PhotonView player)
         {
@@ -367,7 +367,7 @@ namespace TanksMP
 
 
         /// <summary>
-        /// Online: Clears all networked variables of the player via properties in one instruction.
+        /// Online: Xóa tất cả các biến qua mạng của người chơi thông qua custom properties trong một lệnh duy nhất.
         /// </summary>
         public static void Clear(this Photon.Realtime.Player player)
         {

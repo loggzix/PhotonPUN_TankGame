@@ -1,7 +1,7 @@
-﻿/*  This file is part of the "Tanks Multiplayer" project by FLOBUK.
- *  You are only allowed to use these resources if you've bought them from the Unity Asset Store.
- * 	You shall not license, sublicense, sell, resell, transfer, assign, distribute or
- * 	otherwise make available to any third party the Service or the Content. */
+/*  File này là một phần của dự án "Tanks Multiplayer" của FLOBUK.
+ *  Bạn chỉ được phép sử dụng các tài nguyên này nếu bạn đã mua chúng từ Unity Asset Store.
+ * 	Bạn không được cấp phép, cấp phép con, bán, bán lại, chuyển nhượng, chỉ định, phân phối hoặc
+ * 	cung cấp Dịch vụ hoặc Nội dung cho bất kỳ bên thứ ba nào. */
 
 using UnityEngine;
 using System.Collections.Generic;
@@ -10,80 +10,80 @@ using Photon.Pun;
 namespace TanksMP
 {
     /// <summary>
-    /// Projectile script for player shots with collision/hit logic.
+    /// Script cho đạn của người chơi với logic va chạm/đánh trúng.
     /// </summary>
     public class Bullet : MonoBehaviourPun
     {
         /// <summary>
-        /// Projectile travel speed in units.
+        /// Tốc độ di chuyển của đạn tính theo đơn vị.
         /// </summary>
         public float speed = 10;
 
         /// <summary>
-        /// Damage to cause on a player that gets hit.
+        /// Sát thương gây ra cho người chơi bị trúng đạn.
         /// </summary>
         public int damage = 3;
 
         /// <summary>
-        /// Delay until despawned automatically when nothing gets hit.
+        /// Độ trễ cho đến khi tự động hủy (despawn) khi không có gì bị bắn trúng.
         /// </summary>
         public float despawnDelay = 1f;
 
         /// <summary>
-        /// Bounce count of walls and other environment obstactles.
+        /// Số lần nảy của đạn vào tường và các chướng ngại vật môi trường khác.
         /// </summary>
         public int bounce = 0;
 
         /// <summary>
-        /// Maximum amount of Players this bullet can hit on explosion.
+        /// Số lượng người chơi tối đa mà viên đạn này có thể bắn trúng khi phát nổ.
         /// </summary>
         public int maxTargets = 1;
 
         /// <summary>
-        /// Range within the explosion deals damage to other Players.
-        /// The area is only checked if maxTargets is greater than 1.
+        /// Phạm vi trong đó vụ nổ gây sát thương cho các Người chơi khác.
+        /// Khu vực này chỉ được kiểm tra nếu maxTargets lớn hơn 1.
         /// </summary>
         public float explosionRange = 1;
 
         /// <summary>
-        /// Clip to play when a player gets hit.
+        /// Clip âm thanh phát ra khi một người chơi bị trúng đạn.
         /// </summary>
         public AudioClip hitClip;
 
         /// <summary>
-        /// Clip to play when this projectile gets despawned.
+        /// Clip âm thanh phát ra khi viên đạn này bị hủy.
         /// </summary>
         public AudioClip explosionClip;
 
         /// <summary>
-        /// Object to spawn when a player gets hit.
+        /// Đối tượng được tạo ra khi một người chơi bị trúng đạn.
         /// </summary>
         public GameObject hitFX;
 
         /// <summary>
-        /// Object to spawn when this projectile gets despawned.
+        /// Đối tượng được tạo ra khi viên đạn này bị hủy.
         /// </summary>
         public GameObject explosionFX;
 
-        //reference to rigidbody component
+        //tham chiếu đến thành phần rigidbody
         private Rigidbody myRigidbody;
-        //reference to collider component
+        //tham chiếu đến thành phần collider
         private SphereCollider sphereCol;
-        //caching maximum count of bounces for restore
+        //lưu số lượng nảy tối đa để khôi phục
         private int maxBounce;
-        //caching last bounce position for calculating next direction. Instead of using
-        //the current bullet position on collision, calculating the bounce off the previous
-        //bullet position improves the result for high speed bullets which could skip colliders
+        //lưu vị trí nảy cuối cùng để tính toán hướng tiếp theo. Thay vì sử dụng
+        //vị trí viên đạn hiện tại khi va chạm, việc tính toán độ nảy từ vị trí
+        //viên đạn trước đó sẽ cải thiện kết quả cho các viên đạn tốc độ cao vốn có thể bỏ qua các collider
         private Vector3 lastBouncePos;
 
         /// <summary>
-        /// Player gameobject that spawned this projectile.
+        /// Gameobject người chơi đã bắn ra viên đạn này.
         /// </summary>
         [HideInInspector]
         public GameObject owner;
 
     
-        //get component references
+        //lấy tham chiếu các thành phần
         void Awake()
         {
             myRigidbody = GetComponent<Rigidbody>();
@@ -92,11 +92,11 @@ namespace TanksMP
         }
 
 
-        //set initial travelling velocity
-        //On Host, add automatic despawn coroutine
+        //thiết lập vận tốc di chuyển ban đầu
+        //Trên Host, thêm coroutine tự động hủy (despawn)
         void OnSpawn()
         {
-            //for bouncing bullets, save current position only on first spawn (turret position)
+            //đối với đạn nảy, chỉ lưu vị trí hiện tại ở lần sinh ra đầu tiên (vị trí tháp pháo)
             if (bounce == maxBounce)
                 lastBouncePos = transform.position;
 
@@ -105,129 +105,129 @@ namespace TanksMP
         }
 
 
-        ///check what was hit on collisions. Only do non-critical client work here,
-        //not even accessing player variables or anything like that. The server side is separate below
+        ///kiểm tra những gì đã bị trúng khi va chạm. Chỉ thực hiện các công việc không quan trọng của máy khách ở đây,
+        //thậm chí không truy cập các biến người chơi hay bất cứ thứ gì tương tự. Phía server được tách riêng bên dưới
         void OnTriggerEnter(Collider col)
         {
-            //cache corresponding gameobject that was hit
+            //lưu tạm gameobject tương ứng đã bị bắn trúng
             GameObject obj = col.gameObject;
-            //try to get a player component out of the collided gameobject
+            //thử lấy thành phần player từ gameobject đã va chạm
             Player player = obj.GetComponent<Player>();
 
-            //we actually hit a player
-            //do further checks
+            //chúng ta thực sự đã bắn trúng một người chơi
+            //thực hiện các bước kiểm tra tiếp theo
             if (player != null)
             {
-                //ignore ourselves & disable friendly fire (same team index)
+                //bỏ qua chính chúng ta & vô hiệu hóa sát thương đồng đội (cùng chỉ số đội)
                 if (IsFriendlyFire(owner.GetComponent<Player>(), player)) return;
 
-                //create clips and particles on hit
+                //tạo clip âm thanh và hiệu ứng hạt khi trúng đạn
                 if (hitFX) PoolManager.Spawn(hitFX, transform.position, Quaternion.identity);
                 if (hitClip) AudioManager.Play3D(hitClip, transform.position);
             }
             else if (bounce > 0)
             {
-                //a player was not hit but something else, and we still have some bounces left
-                //create a ray that points in the direction this bullet is currently flying to
+                //người chơi không bị bắn trúng nhưng là thứ khác, và chúng ta vẫn còn một số lần nảy
+                //tạo một tia ray chỉ về hướng viên đạn này hiện đang bay tới
                 Ray ray = new Ray(lastBouncePos - transform.forward * 0.5f, transform.forward);
                 RaycastHit hit;
 
-                //perform spherecast in the flying direction, on the default layer
+                //thực hiện spherecast theo hướng bay, trên layer mặc định (default)
                 if (Physics.SphereCast(ray, sphereCol.radius, out hit, Mathf.Infinity, 1 << 0))
                 {
-                    //ignore multiple collisions i.e. inside colliders
+                    //bỏ qua nhiều va chạm, ví dụ: bên trong các collider
                     if (Vector3.Distance(transform.position, lastBouncePos) < 0.05f)
                     {
                         return;
                     }
 
-                    //cache latest collision point
+                    //lưu điểm va chạm mới nhất
                     lastBouncePos = hit.point;
-                    //substract bouncing count by one
+                    //giảm số lần nảy đi một
                     bounce--;
 
-                    //something was hit in the direction this projectile is flying to
-                    //get new reflected (bounced off) direction of the colliding object
+                    //thứ gì đó đã bị bắn trúng theo hướng viên đạn này đang bay tới
+                    //lấy hướng phản xạ mới (nảy ra) của đối tượng va chạm
                     Vector3 dir = Vector3.Reflect(ray.direction, hit.normal);
-                    //rotate bullet to face the new direction
+                    //xoay viên đạn để hướng về hướng mới
                     transform.rotation = Quaternion.LookRotation(dir);
-                    //reassign velocity with the new direction in mind
+                    //gán lại vận tốc với hướng mới
                     OnSpawn();
 
-                    //play clip at the collided position
+                    //phát clip tại vị trí va chạm
                     if (hitClip) AudioManager.Play3D(hitClip, transform.position);
-                    //exit execution until next collision
+                    //thoát thực thi cho đến lần va chạm tiếp theo
                     return;
                 }
             }
 
-            //despawn gameobject
+            //hủy gameobject
             PoolManager.Despawn(gameObject);
 
-            //the previous code is not synced to clients at all, because all that clients need is the
-            //initial position and direction of the bullet to calculate the exact same behavior on their end.
-            //at this point, continue with the critical game aspects only on the server
+            //mã trước đó hoàn toàn không được đồng bộ với các máy khách, vì tất cả những gì các máy khách cần là
+            //vị trí và hướng ban đầu của viên đạn để tính toán hành vi chính xác tương tự như vậy ở phía họ.
+            //tại thời điểm này, hãy tiếp tục với các khía cạnh quan trọng của trò chơi chỉ trên server
             if (!PhotonNetwork.IsMasterClient) return;
 
-            //create list for affected players by this bullet and add the collided player immediately,
-            //we have done validation & friendly fire checks above already
+            //tạo danh sách cho các người chơi bị ảnh hưởng bởi viên đạn này và thêm người chơi va chạm vào ngay lập tức,
+            //chúng ta đã thực hiện kiểm tra xác nhận & sát thương đồng đội ở trên rồi
             List<Player> targets = new List<Player>();
             if(player != null) targets.Add(player);
 
-            //in case this bullet can hit more than 1 target, perform the additional physics area check
+            //trong trường hợp viên đạn này có thể bắn trúng nhiều hơn 1 mục tiêu, hãy thực hiện kiểm tra khu vực vật lý bổ sung
             if (maxTargets > 1)
             {
-                //find all colliders in the specified range around this bullet, on the Player layer
+                //tìm tất cả các collider trong phạm vi đã chỉ định xung quanh viên đạn này, trên lớp Player
                 Collider[] others = Physics.OverlapSphere(transform.position, explosionRange, 1 << 8);
                 Player ownerPlayer = owner.GetComponent<Player>();
 
-                //loop over all player collisions found
+                //lặp qua tất cả các va chạm người chơi tìm thấy
                 for (int i = 0; i < others.Length; i++)
                 {
-                    //get Player component from that collision
+                    //lấy thành phần Player từ va chạm đó
                     Player other = others[i].GetComponent<Player>();
                     if (other == null || targets.Contains(other)) continue;
 
-                    //again, ignore own bullets and also friendly fire, now done exclusively on server side
+                    //một lần nữa, bỏ qua các viên đạn của chính mình và cả sát thương đồng đội, bây giờ được thực hiện độc quyền trên phía server
                     if (IsFriendlyFire(ownerPlayer, other)) continue;
 
-                    //add this Player component to the list
-                    //cancel in case we do reach the maximum count now
+                    //thêm thành phần Player này vào danh sách
+                    //hủy bỏ trong trường hợp chúng ta đạt đến số lượng tối đa ngay bây giờ
                     targets.Add(other);
                     if (targets.Count == maxTargets)
                         break;
                 }
             }
 
-            //apply bullet damage to the collided players
+            //áp dụng sát thương đạn cho các người chơi bị va chạm
             for(int i = 0; i < targets.Count; i++)
                 targets[i].TakeDamage(this);
         }
 
 
-        //set despawn effects and reset variables
+        //thiết lập hiệu ứng khi đạn biến mất và đặt lại các biến
         void OnDespawn()
         {
-            //create clips and particles on despawn
+            //tạo clip và hiệu ứng hạt khi biến mất (despawn)
             if (explosionFX) PoolManager.Spawn(explosionFX, transform.position, transform.rotation);
             if (explosionClip) AudioManager.Play3D(explosionClip, transform.position);
 
-            //reset modified variables to the initial state
+            //đặt lại các biến đã sửa đổi về trạng thái ban đầu
             myRigidbody.linearVelocity = Vector3.zero;
             myRigidbody.angularVelocity = Vector3.zero;
             bounce = maxBounce;
         }
 
 
-        //method to check for friendly fire (same team index).
+        //phương thức kiểm tra sát thương đồng đội (cùng chỉ số đội).
         private bool IsFriendlyFire(Player origin, Player target)
         {
-            //do not trigger damage for colliding with our own bullet
+            //không kích hoạt sát thương khi va chạm với chính viên đạn của mình
             if (target.gameObject == owner || target.gameObject == null) return true;
-            //perform the actual friendly fire check on both team indices and see if they match
+            //thực hiện kiểm tra sát thương đồng đội thực tế trên cả hai chỉ số đội và xem chúng có khớp hay không
             else if (!GameManager.GetInstance().friendlyFire && origin.GetView().GetTeam() == target.GetView().GetTeam()) return true;
 
-            //friendly fire is off, this bullet should do damage
+            //sát thương đồng đội đang tắt, viên đạn này sẽ gây sát thương
             return false;
         }
     }

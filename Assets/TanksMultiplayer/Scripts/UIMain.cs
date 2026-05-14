@@ -1,7 +1,7 @@
-/*  This file is part of the "Tanks Multiplayer" project by FLOBUK.
- *  You are only allowed to use these resources if you've bought them from the Unity Asset Store.
- * 	You shall not license, sublicense, sell, resell, transfer, assign, distribute or
- * 	otherwise make available to any third party the Service or the Content. */
+/*  File này là một phần của dự án "Tanks Multiplayer" của FLOBUK.
+ *  Bạn chỉ được phép sử dụng các tài nguyên này nếu bạn đã mua chúng từ Unity Asset Store.
+ * 	Bạn không được cấp phép, cấp phép con, bán, bán lại, chuyển nhượng, chỉ định, phân phối hoặc
+ * 	cung cấp Dịch vụ hoặc Nội dung cho bất kỳ bên thứ ba nào. */
 
 using System.Collections;
 using UnityEngine;
@@ -11,62 +11,62 @@ using TMPro;
 namespace TanksMP
 {
     /// <summary>
-    /// UI script for all elements, settings and user interactions in the menu scene.
+    /// Script UI cho tất cả các phần tử, cài đặt và tương tác của người dùng trong menu scene.
     /// </summary>
     public class UIMain : MonoBehaviour
     {
         /// <summary>
-        /// Window object for loading screen between connecting and scene switch.
+        /// Đối tượng cửa sổ cho màn hình tải giữa lúc đang kết nối và chuyển đổi scene.
         /// </summary>
         public GameObject loadingWindow;
 
         /// <summary>
-        /// Window object for displaying errors with the connection or timeouts.
+        /// Đối tượng cửa sổ để hiển thị các lỗi kết nối hoặc hết thời gian chờ (timeout).
         /// </summary>
         public GameObject connectionErrorWindow;
 
         /// <summary>
-        /// Window object for displaying errors with the billing actions.
+        /// Đối tượng cửa sổ để hiển thị các lỗi liên quan đến hành động thanh toán.
         /// </summary>
         public GameObject billingErrorWindow;
 
         /// <summary>
-		/// Settings: input field for the player name.
+		/// Cài đặt: trường nhập liệu cho tên người chơi.
 		/// </summary>
 		public TMPro.TMP_InputField nameField;
 
         /// <summary>
-        /// Settings: dropdown selection for network mode.
+        /// Cài đặt: lựa chọn dropdown cho chế độ mạng.
         /// </summary>
         public TMPro.TMP_Dropdown networkDrop;
 
         /// <summary>
-        /// Dropdown selection for preferred game mode.
+        /// Lựa chọn dropdown cho chế độ chơi ưa thích.
         /// </summary>
         public TMPro.TMP_Dropdown gameModeDrop;
 
         /// <summary>
-		/// Settings: input field for manual server address,
-        /// hosting a server in a private network (Photon only).
+		/// Cài đặt: trường nhập liệu cho địa chỉ máy chủ thủ công,
+        /// lưu trữ máy chủ trong mạng riêng tư (chỉ dành cho Photon).
 		/// </summary>
 		public TMPro.TMP_InputField serverField;
 
         /// <summary>
-        /// Settings: checkbox for playing background music.
+        /// Cài đặt: checkbox để phát nhạc nền.
         /// </summary>
         public Toggle musicToggle;
 
         /// <summary>
-        /// Settings: slider for adjusting game sound volume.
+        /// Cài đặt: slider để điều chỉnh âm lượng âm thanh trò chơi.
         /// </summary>
         public Slider volumeSlider;
 
 
-        //initialize player selection in Settings window
-        //if this is the first time launching the game, set initial values
+        //khởi tạo lựa chọn của người chơi trong cửa sổ Cài đặt
+        //nếu đây là lần đầu tiên khởi chạy trò chơi, hãy đặt các giá trị ban đầu
         void Start()
         {
-            //set initial values for all settings
+            //đặt giá trị ban đầu cho tất cả các cài đặt
             if (!PlayerPrefs.HasKey(PrefsKeys.playerName)) PlayerPrefs.SetString(PrefsKeys.playerName, "User" + System.String.Format("{0:0000}", Random.Range(1, 9999)));
             if (!PlayerPrefs.HasKey(PrefsKeys.networkMode)) PlayerPrefs.SetInt(PrefsKeys.networkMode, 0);
             if (!PlayerPrefs.HasKey(PrefsKeys.gameMode)) PlayerPrefs.SetInt(PrefsKeys.gameMode, 0);
@@ -77,7 +77,7 @@ namespace TanksMP
 
             PlayerPrefs.Save();
 
-            //read the selections and set them in the corresponding UI elements
+            //đọc các lựa chọn và đặt chúng vào các phần tử UI tương ứng
             nameField.text = PlayerPrefs.GetString(PrefsKeys.playerName);
             networkDrop.value = PlayerPrefs.GetInt(PrefsKeys.networkMode);
             gameModeDrop.value = PlayerPrefs.GetInt(PrefsKeys.gameMode);
@@ -85,19 +85,19 @@ namespace TanksMP
             musicToggle.isOn = bool.Parse(PlayerPrefs.GetString(PrefsKeys.playMusic));
             volumeSlider.value = PlayerPrefs.GetFloat(PrefsKeys.appVolume);
 
-            //call the onValueChanged callbacks once with their saved values
+            //gọi các callback onValueChanged một lần với các giá trị đã lưu của chúng
             OnMusicChanged(musicToggle.isOn);
             OnVolumeChanged(volumeSlider.value);
 
-            //listen to network connection and IAP billing errors
+            //lắng nghe các lỗi kết nối mạng và thanh toán IAP
             NetworkManagerCustom.connectionFailedEvent += OnConnectionError;
             UnityIAPManager.purchaseFailedEvent += OnBillingError;
         }
 
 
         /// <summary>
-        /// Tries to enter the game scene. Sets the loading screen active while connecting to the
-        /// Matchmaker and starts the timeout coroutine at the same time.
+        /// Cố gắng vào game scene. Kích hoạt màn hình tải trong khi kết nối với
+        /// Matchmaker và đồng thời bắt đầu coroutine xử lý hết thời gian chờ (timeout).
         /// </summary>
         public void Play()
         {
@@ -107,22 +107,22 @@ namespace TanksMP
         }
 
 
-        //coroutine that waits 10 seconds before cancelling joining a match
+        //coroutine đợi 10 giây trước khi hủy việc tham gia trận đấu
         IEnumerator HandleTimeout()
         {
             yield return new WaitForSeconds(10);
 
-            //timeout has passed, we would like to stop joining a game now
+            //đã hết thời gian chờ, chúng ta muốn dừng việc tham gia trò chơi ngay bây giờ
             Photon.Pun.PhotonNetwork.Disconnect();
-            //display connection issue window
+            //hiển thị cửa sổ lỗi kết nối
             OnConnectionError();
         }
 
 
-        //activates the connection error window to be visible
+        //kích hoạt cửa sổ lỗi kết nối để nó hiển thị
         void OnConnectionError()
         {
-            //game shut down completely
+            //trò chơi đã tắt hoàn toàn
             if (this == null)
                 return;
 
@@ -132,10 +132,10 @@ namespace TanksMP
         }
 
 
-        //activates the billing error window to be visible
+        //kích hoạt cửa sổ lỗi thanh toán để nó hiển thị
         void OnBillingError(string error)
         {
-            //get text label to display billing failed reason
+            //lấy nhãn văn bản để hiển thị lý do thanh toán thất bại
             TMP_Text errorLabel = billingErrorWindow.GetComponentInChildren<TMP_Text>();
             if (errorLabel)
                 errorLabel.text = "Purchase failed.\n" + error;
@@ -145,8 +145,8 @@ namespace TanksMP
 
 
         /// <summary>
-        /// Allow additional input of server address only in network mode LAN.
-        /// Otherwise, the input field will be hidden in the settings (Photon only).
+        /// Chỉ cho phép nhập thêm địa chỉ máy chủ trong chế độ mạng LAN.
+        /// Nếu không, trường nhập liệu sẽ bị ẩn trong phần cài đặt (chỉ dành cho Photon).
         /// </summary>
         public void OnNetworkChanged(int value)
         {
@@ -155,8 +155,8 @@ namespace TanksMP
 
 
         /// <summary>
-        /// Save newly selected GameMode value to PlayerPrefs in order to check it later.
-        /// Called by DropDown onValueChanged event.
+        /// Lưu giá trị GameMode mới được chọn vào PlayerPrefs để kiểm tra sau.
+        /// Được gọi bởi sự kiện onValueChanged của DropDown.
         /// </summary>
         public void OnGameModeChanged(int value)
         {
@@ -166,8 +166,8 @@ namespace TanksMP
 
 
         /// <summary>
-        /// Modify music AudioSource based on player selection.
-        /// Called by Toggle onValueChanged event.
+        /// Chỉnh sửa AudioSource nhạc dựa trên lựa chọn của người chơi.
+        /// Được gọi bởi sự kiện onValueChanged của Toggle.
         /// </summary>
         public void OnMusicChanged(bool value)
         {
@@ -177,8 +177,8 @@ namespace TanksMP
 
 
         /// <summary>
-        /// Modify global game volume based on player selection.
-        /// Called by Slider onValueChanged event.
+        /// Chỉnh sửa âm lượng trò chơi tổng thể dựa trên lựa chọn của người chơi.
+        /// Được gọi bởi sự kiện onValueChanged của Slider.
         /// </summary>
         public void OnVolumeChanged(float value)
         {
@@ -188,7 +188,7 @@ namespace TanksMP
 
 
         /// <summary>
-        /// Saves all player selections chosen in the Settings window on the device.
+        /// Lưu tất cả các lựa chọn của người chơi trong cửa sổ Cài đặt vào thiết bị.
         /// </summary>
         public void CloseSettings()
         {
@@ -202,14 +202,14 @@ namespace TanksMP
 
 		
         /// <summary>
-        /// Opens a browser window to the App Store entry for this app.
+        /// Mở cửa sổ trình duyệt đến trang App Store cho ứng dụng này.
         /// </summary>
         public void RateApp()
         {
             //UnityAnalyticsManager.RateStart();
             
-            //default app url on non-mobile platforms
-            //replace with your website, for example
+            //url ứng dụng mặc định trên các nền tảng không phải di động
+            //thay thế bằng trang web của bạn, ví dụ vậy
 			string url = "";
 			
 			#if UNITY_ANDROID

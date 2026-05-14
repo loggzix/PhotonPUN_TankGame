@@ -1,49 +1,49 @@
-/*  This file is part of the "Tanks Multiplayer" project by FLOBUK.
- *  You are only allowed to use these resources if you've bought them from the Unity Asset Store.
- * 	You shall not license, sublicense, sell, resell, transfer, assign, distribute or
- * 	otherwise make available to any third party the Service or the Content. */
+/*  File này là một phần của dự án "Tanks Multiplayer" của FLOBUK.
+ *  Bạn chỉ được phép sử dụng các tài nguyên này nếu bạn đã mua chúng từ Unity Asset Store.
+ * 	Bạn không được cấp phép, cấp phép con, bán, bán lại, chuyển nhượng, chỉ định, phân phối hoặc
+ * 	cung cấp Dịch vụ hoặc Nội dung cho bất kỳ bên thứ ba nào. */
 
 namespace TanksMP
 {
     /// <summary>
-    /// List of all keys saved on the user's device, be it for settings or selections.
+    /// Danh sách tất cả các key được lưu trên thiết bị của người dùng, cho dù là cài đặt hay lựa chọn.
     /// </summary>
     public class PrefsKeys
     {
         /// <summary>
-		/// PlayerPrefs key for player name: UserXXXX
+		/// Key PlayerPrefs cho tên người chơi: UserXXXX
 		/// </summary>
         public const string playerName = "TM_playerName";
 
         /// <summary>
-        /// PlayerPrefs key for selected network mode: 0, 1 or 2
+        /// Key PlayerPrefs cho chế độ mạng đã chọn: 0, 1 hoặc 2
         /// </summary>
         public const string networkMode = "TM_networkMode";
 
         /// <summary>
-        /// PlayerPrefs key for selected game mode.
+        /// Key PlayerPrefs cho chế độ chơi đã chọn.
         /// </summary>
         public const string gameMode = "TM_gameMode";
 
         /// <summary>
-        /// Server address for manual connection, e.g. in LAN games.
-        /// This is only used when using Photon Networking, as Netcode
-        /// does support broadcast and automatic server discovery.
+        /// Địa chỉ máy chủ để kết nối thủ công, ví dụ: trong các trò chơi LAN.
+        /// Cái này chỉ được sử dụng khi sử dụng Photon Networking, vì Netcode
+        /// có hỗ trợ broadcast và tự động tìm kiếm máy chủ.
         /// </summary>
         public const string serverAddress = "TM_serverAddress";
 
         /// <summary>
-        /// PlayerPrefs key for background music state: true/false
+        /// Key PlayerPrefs cho trạng thái nhạc nền: true/false
         /// </summary>
         public const string playMusic = "TM_playMusic";
 
         /// <summary>
-        /// PlayerPrefs key for global audio volume: 0-1 range
+        /// Key PlayerPrefs cho âm lượng ứng dụng tổng thể: phạm vi 0-1
         /// </summary>
         public const string appVolume = "TM_appVolume";
       
         /// <summary>
-        /// PlayerPrefs key for selected player model: 0/1/2 etc.
+        /// Key PlayerPrefs cho mẫu người chơi đã chọn: 0/1/2 v.v.
         /// </summary>
         public const string activeTank = "TM_activeTank";
     }

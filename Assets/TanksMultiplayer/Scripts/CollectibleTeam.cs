@@ -1,7 +1,7 @@
-﻿/*  This file is part of the "Tanks Multiplayer" project by FLOBUK.
- *  You are only allowed to use these resources if you've bought them from the Unity Asset Store.
- * 	You shall not license, sublicense, sell, resell, transfer, assign, distribute or
- * 	otherwise make available to any third party the Service or the Content. */
+/*  File này là một phần của dự án "Tanks Multiplayer" của FLOBUK.
+ *  Bạn chỉ được phép sử dụng các tài nguyên này nếu bạn đã mua chúng từ Unity Asset Store.
+ * 	Bạn không được cấp phép, cấp phép con, bán, bán lại, chuyển nhượng, chỉ định, phân phối hoặc
+ * 	cung cấp Dịch vụ hoặc Nội dung cho bất kỳ bên thứ ba nào. */
 
 using UnityEngine;
 using Photon.Pun;
@@ -9,31 +9,31 @@ using Photon.Pun;
 namespace TanksMP
 {
     /// <summary>
-    /// Custom Collectible implementation for scene owned (unassigned) or team owned items.
-    /// E.g. allowing for 'Rambo' pickups, Capture the Flag items etc.
+    /// Triển khai Vật phẩm thu thập tùy chỉnh cho các vật phẩm thuộc quyền sở hữu của scene (chưa gán) hoặc thuộc quyền sở hữu của đội.
+    /// Ví dụ: cho phép nhặt vật phẩm 'Rambo', vật phẩm Cướp cờ (Capture the Flag), v.v.
     /// </summary>
 	public class CollectibleTeam : Collectible
     {
         /// <summary>
-        /// Team index this Collectible belongs to, or -1 if unassigned.
-        /// Teams are defined in the GameManager script inspector.
+        /// Chỉ số đội mà Vật phẩm thu thập này thuộc về, hoặc -1 nếu chưa gán.
+        /// Các đội được định nghĩa trong inspector của script GameManager.
         /// </summary>
         public int teamIndex = -1;
 
         /// <summary>
-        /// Optional: Material that should be re-assigned if this Collectible is dropped or returned.
+        /// Tùy chọn: Material nên được gán lại nếu Vật phẩm thu thập này bị rơi hoặc được trả lại.
         /// </summary>
         public Material baseMaterial;
 
         /// <summary>
-        /// Optional: Renderer on which the material should be modified depending on carrier team.
+        /// Tùy chọn: Renderer mà trên đó material nên được sửa đổi tùy thuộc vào đội đang mang.
         /// </summary>
         public MeshRenderer targetRenderer;
 
 
         /// <summary>
-        /// Server only: check for players colliding with the powerup.
-        /// Possible collision are defined in the Physics Matrix.
+        /// Chỉ dành cho server: kiểm tra các người chơi va chạm với powerup.
+        /// Các va chạm có thể xảy ra được xác định trong Physics Matrix.
         /// </summary>
         public override void OnTriggerEnter(Collider col)
         {
@@ -43,22 +43,22 @@ namespace TanksMP
             GameObject obj = col.gameObject;
             Player player = obj.GetComponent<Player>();
 
-            //try to apply collectible to player, the result should be true
+            //thử áp dụng vật phẩm thu thập cho người chơi, kết quả nên là true
             if (Apply(player))
             {
-                //clean up previous buffered RPCs so we only keep the most recent one
+                //dọn dẹp các RPC đã đệm trước đó để chúng ta chỉ giữ lại cái gần đây nhất
                 PhotonNetwork.RemoveRPCs(spawner.photonView);
 
-                //check if colliding player belongs to the same team as the item
+                //kiểm tra xem người chơi va chạm có thuộc cùng một đội với vật phẩm không
                 if (teamIndex == player.GetView().GetTeam())
                 {
-                    //player collected team item, return it to team home base
-                    //we do not have to send this as buffered RPC because this is the default spawn position
+                    //người chơi đã thu thập vật phẩm của đội, trả nó về căn cứ của đội
+                    //chúng ta không cần gửi cái này dưới dạng buffered RPC vì đây là vị trí spawn mặc định
                     spawner.photonView.RPC("Return", RpcTarget.All);
                 }
                 else
                 {
-                    //player picked up item from other team, send out buffered RPC for it to be remembered
+                    //người chơi đã nhặt vật phẩm từ đội khác, gửi đi buffered RPC để nó được ghi nhớ
                     spawner.photonView.RPC("Pickup", RpcTarget.AllBuffered, (short)player.GetView().ViewID);
                 }
             }
@@ -66,27 +66,27 @@ namespace TanksMP
 
 
         /// <summary>
-        /// Overrides the default behavior with a custom implementation.
-        /// Check for the carrier and item position to decide valid pickup.
+        /// Ghi đè hành vi mặc định bằng một triển khai tùy chỉnh.
+        /// Kiểm tra người đang mang và vị trí vật phẩm để quyết định việc nhặt vật phẩm có hợp lệ hay không.
         /// </summary>
         public override bool Apply(Player p)
         {
-            //do not allow collection if the item is already carried around
-            //but also skip any processing if our flag is on the home base already
+            //không cho phép thu thập nếu vật phẩm đã được mang đi nơi khác
+            //nhưng cũng bỏ qua bất kỳ xử lý nào nếu cờ của chúng ta đã ở căn cứ rồi
             if (p == null || carrierId > 0 ||
                 teamIndex == p.GetView().GetTeam() && transform.position == spawner.transform.position)
                 return false;
 
-            //if a target renderer is set, assign team material
+            //nếu một target renderer được thiết lập, gán material của đội
             Colorize(p.GetView().GetTeam());
 
-            //return successful collection
+            //trả về việc thu thập thành công
             return true;
         }
 
 
         /// <summary>
-        /// Overrides the default behavior with a custom implementation.
+        /// Ghi đè hành vi mặc định bằng một triển khai tùy chỉnh.
         /// </summary>
         public override void OnDrop()
         {
@@ -95,7 +95,7 @@ namespace TanksMP
 
 
         /// <summary>
-        /// Overrides the default behavior with a custom implementation.
+        /// Ghi đè hành vi mặc định bằng một triển khai tùy chỉnh.
         /// </summary>
         public override void OnReturn()
         {
@@ -103,7 +103,7 @@ namespace TanksMP
         }
 
 
-        //assign material based on team index passed in
+        //gán material dựa trên chỉ số đội được truyền vào
         void Colorize(int teamIndex)
         {
             if (targetRenderer != null)

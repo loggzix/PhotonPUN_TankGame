@@ -1,7 +1,7 @@
-/*  This file is part of the "Tanks Multiplayer" project by FLOBUK.
- *  You are only allowed to use these resources if you've bought them from the Unity Asset Store.
- * 	You shall not license, sublicense, sell, resell, transfer, assign, distribute or
- * 	otherwise make available to any third party the Service or the Content. */
+/*  File này là một phần của dự án "Tanks Multiplayer" của FLOBUK.
+ *  Bạn chỉ được phép sử dụng các tài nguyên này nếu bạn đã mua chúng từ Unity Asset Store.
+ * 	Bạn không được cấp phép, cấp phép con, bán, bán lại, chuyển nhượng, chỉ định, phân phối hoặc
+ * 	cung cấp Dịch vụ hoặc Nội dung cho bất kỳ bên thứ ba nào. */
 
 #if UNITY_IAP
 using Unity.Services.Core;
@@ -18,8 +18,8 @@ using UnityEngine;
 namespace TanksMP
 {
     /// <summary>
-    /// Manager handling the full in-app purchase workflow,
-    /// granting purchases and catching errors using Unity IAP.
+    /// Manager xử lý toàn bộ quy trình mua hàng trong ứng dụng (IAP),
+    /// cấp quyền mua và bắt lỗi bằng Unity IAP.
     /// </summary>
     #if UNITY_IAP
     public class UnityIAPManager : MonoBehaviour, IDetailedStoreListener
@@ -29,14 +29,14 @@ namespace TanksMP
     {
         #pragma warning disable 0067
         /// <summary>
-        /// Fired on failed purchases to deliver its product identifier.
+        /// Kích hoạt khi việc mua hàng thất bại để cung cấp mã định danh sản phẩm.
         /// </summary>
         public static event Action<string> purchaseFailedEvent;
         #pragma warning restore 0067
 
         #if UNITY_IAP
-        //disable platform specific warnings, because Unity throws them
-        //for unused variables however they are used in this context
+        //vô hiệu hóa các cảnh báo dành riêng cho nền tảng, vì Unity thường đưa ra chúng
+        //cho các biến không sử dụng, tuy nhiên chúng được sử dụng trong ngữ cảnh này
         #pragma warning disable 0414
         private static ConfigurationBuilder builder;
         private static IStoreController controller;
@@ -47,10 +47,10 @@ namespace TanksMP
 
         void Start()
         {
-            //construct IAP purchasing instance and add the Google Play public key to it
+            //xây dựng instance mua hàng IAP và thêm Google Play public key vào đó
             builder = ConfigurationBuilder.Instance(StandardPurchasingModule.Instance());
 
-            //iterate over all IAPProducts found in the scene and add their id to be looked up by Unity IAP
+            //lặp qua tất cả các IAPProduct tìm thấy trong scene và thêm id của chúng để Unity IAP tra cứu
             IAPProduct[] products = Resources.FindObjectsOfTypeAll<IAPProduct>();
             foreach(IAPProduct product in products)
             {
@@ -63,16 +63,16 @@ namespace TanksMP
 
 
         /// <summary>
-        /// Initialize core services and Unity IAP.
+        /// Khởi tạo các dịch vụ cốt lõi và Unity IAP.
         /// </summary>
         public async void Initialize()
         {
             try
             {
-                //Unity Gaming Services are required first
+                //Yêu cầu các Dịch vụ Trò chơi của Unity trước
                 await UnityServices.InitializeAsync();
 
-                //now we're ready to initialize Unity IAP
+                //bây giờ chúng ta đã sẵn sàng khởi tạo Unity IAP
                 UnityPurchasing.Initialize(this, builder);
             }
             catch (Exception ex)
@@ -84,12 +84,12 @@ namespace TanksMP
 
 
         /// <summary>
-        /// Called when Unity IAP is ready to make purchases, delivering the store controller
-        /// (contains all online products) and platform specific extension
+        /// Được gọi khi Unity IAP sẵn sàng thực hiện mua hàng, cung cấp store controller
+        /// (chứa tất cả các sản phẩm trực tuyến) và các extension dành riêng cho nền tảng
         /// </summary>
         public void OnInitialized (IStoreController ctrl, IExtensionProvider ext)
         {
-            //cache references
+            //lưu trữ các tham chiếu (cache)
             controller = ctrl;
             extensions = ext;
 
@@ -101,7 +101,7 @@ namespace TanksMP
 
 
         /// <summary>
-        /// Called when the user presses the 'Buy' button on an IAPProduct.
+        /// Được gọi khi người dùng nhấn nút 'Buy' trên một IAPProduct.
         /// </summary>
         public static void PurchaseProduct(string productId)
         {
@@ -111,7 +111,7 @@ namespace TanksMP
 
 
         /// <summary>
-        /// Called when Unity IAP encounters an unrecoverable initialization error.
+        /// Được gọi khi Unity IAP gặp lỗi khởi tạo không thể phục hồi.
         /// </summary>
         public void OnInitializeFailed (InitializationFailureReason error)
         {
@@ -120,7 +120,7 @@ namespace TanksMP
 
 
         /// <summary>
-        /// Called when Unity IAP encounters an unrecoverable initialization error.
+        /// Được gọi khi Unity IAP gặp lỗi khởi tạo không thể phục hồi.
         /// </summary>
         public void OnInitializeFailed(InitializationFailureReason error, string message)
         {
@@ -129,7 +129,7 @@ namespace TanksMP
 
 
         /// <summary>
-        /// Called when a purchase completes after being bought.
+        /// Được gọi khi một giao dịch mua hoàn tất sau khi được mua.
         /// </summary>
         public PurchaseProcessingResult ProcessPurchase (PurchaseEventArgs e)
         {
@@ -137,7 +137,7 @@ namespace TanksMP
 
             #if IAPGUARD
                 PurchaseState state = IAPGuard.Instance.RequestPurchase(product);
-                //handle what happens with the product next
+                //xử lý những gì sẽ xảy ra với sản phẩm tiếp theo
                 switch (state)
                 {
                     case PurchaseState.Pending:
@@ -148,13 +148,13 @@ namespace TanksMP
                 }                
             #endif
 
-            //with the transaction finished, just call our purchase method
+            //với giao dịch đã hoàn thành, chỉ cần gọi phương thức mua hàng của chúng ta
             if(product != null)
             { 
                 OnPurchaseSuccess(product);
             }
 
-            //return that we are done with processing the transaction
+            //trả về rằng chúng ta đã hoàn tất việc xử lý giao dịch
             return PurchaseProcessingResult.Complete;
         }
 
@@ -172,15 +172,15 @@ namespace TanksMP
 
         void OnPurchaseSuccess(Product purchasedProduct)
         {
-            //get all IAPProduct references in the scene, then loop over them
+            //lấy tất cả tham chiếu IAPProduct trong scene, sau đó lặp qua chúng
             IAPProduct[] products = FindObjectsOfType(typeof(IAPProduct)) as IAPProduct[];
             foreach (IAPProduct product in products)
             {
-                //we have found the IAPProduct instance we have bought right now
+                //chúng ta đã tìm thấy instance IAPProduct mà chúng ta vừa mua xong
                 if (product.id == purchasedProduct.definition.id)
                 {
-                    //set the product to purchased
-                    //if it is selectable, show its select button
+                    //đặt sản phẩm thành đã mua
+                    //nếu nó có thể chọn được, hiển thị nút chọn của nó
                     product.Purchased();
                     if (product.selectButton)
                         product.IsSelected(true);
@@ -188,14 +188,14 @@ namespace TanksMP
                 }
             }
 
-            //save the encrypted identifier of this product on the device to keep it as purchased
+            //lưu mã định danh được mã hóa của sản phẩm này trên thiết bị để giữ nó ở trạng thái đã mua
             PlayerPrefs.SetString(Encryptor.Encrypt(purchasedProduct.definition.id), "");
             PlayerPrefs.Save();
         }
 
 
         /// <summary>
-        /// Called when a purchase fails, providing the product and reason.
+        /// Được gọi khi một giao dịch mua thất bại, cung cấp sản phẩm và lý do.
         /// </summary>
         public void OnPurchaseFailed (Product product, PurchaseFailureReason reason)
         {
@@ -204,7 +204,7 @@ namespace TanksMP
 
 
         /// <summary>
-        /// Called when a purchase fails, providing the product and description (including reason).
+        /// Được gọi khi một giao dịch mua thất bại, cung cấp sản phẩm và mô tả (bao gồm cả lý do).
         /// </summary>
         public void OnPurchaseFailed(Product product, PurchaseFailureDescription description)
         {
@@ -213,7 +213,7 @@ namespace TanksMP
 
 
         /// <summary>
-        /// Method for restoring transactions (prompts for password on iOS).
+        /// Phương thức khôi phục các giao dịch (yêu cầu mật khẩu trên iOS).
         /// </summary>
         public static void RestoreTransactions()
         {

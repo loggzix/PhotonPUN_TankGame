@@ -1,40 +1,40 @@
-/*  This file is part of the "Tanks Multiplayer" project by FLOBUK.
- *  You are only allowed to use these resources if you've bought them from the Unity Asset Store.
- * 	You shall not license, sublicense, sell, resell, transfer, assign, distribute or
- * 	otherwise make available to any third party the Service or the Content. */
+/*  File này là một phần của dự án "Tanks Multiplayer" của FLOBUK.
+ *  Bạn chỉ được phép sử dụng các tài nguyên này nếu bạn đã mua chúng từ Unity Asset Store.
+ * 	Bạn không được cấp phép, cấp phép con, bán, bán lại, chuyển nhượng, chỉ định, phân phối hoặc
+ * 	cung cấp Dịch vụ hoặc Nội dung cho bất kỳ bên thứ ba nào. */
 
 using UnityEngine;
 
 namespace TanksMP
 {
     /// <summary>
-    /// Orientates the gameobject this script is attached to to always face the camera.
+    /// Định hướng gameobject được gắn script này luôn hướng về phía camera.
     /// </summary>
     public class UIBillboard : MonoBehaviour
     {
         /// <summary>
-        /// If enabled, scales this object to always stay at the same size,
-        /// regardless of the position in the scene i.e. distance to camera.
+        /// Nếu được bật, sẽ tỷ lệ hóa đối tượng này để luôn giữ cùng một kích thước,
+        /// bất kể vị trí trong scene, tức là khoảng cách tới camera.
         /// </summary>
         public bool scaleWithDistance = false;
 
         /// <summary>
-        /// Multiplier applied to the distance scale calculation.
+        /// Hệ số nhân áp dụng cho việc tính toán tỷ lệ theo khoảng cách.
         /// </summary>
         public float scaleMultiplier = 1f;
 
-        //optimize GetComponent calls:
-        //cache reference to camera transform
+        //tối ưu hóa các lệnh gọi GetComponent:
+        //lưu tạm tham chiếu đến transform của camera
         private Transform camTrans;
         
-        //cache reference to this transform
+        //lưu tạm tham chiếu đến transform này
         private Transform trans;
 
-        //calculated size depending on camera distance
+        //kích thước được tính toán tùy thuộc vào khoảng cách camera
         private float size;
 
 
-        //initialize variables
+        //khởi tạo các biến
         void Awake()
         {
             camTrans = Camera.main.transform;
@@ -42,7 +42,7 @@ namespace TanksMP
         }
 
 
-        //always face the camera every frame
+        //luôn hướng về phía camera mỗi frame
         void Update()
         {
             transform.LookAt(trans.position + camTrans.rotation * Vector3.forward, camTrans.rotation * Vector3.up);
